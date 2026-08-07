@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chore Champions</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --bg:#0F332D;
+  --bg-deep:#0A2622;
+  --card:#FFFBF1;
+  --card-line:#E6D9B6;
+  --card-shadow:#0A2622;
+  --ink:#20302B;
+  --ink-soft:#5D6D63;
+  --gold:#F2B134;
+  --gold-deep:#B9800E;
+  --coral:#EF6F53;
+  --coral-deep:#B23E27;
+  --green:#4C9A6A;
+  --green-deep:#2E6B47;
+  --red:#D65A4A;
+  --red-deep:#93301F;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:'Nunito',sans-serif;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.03) 0, transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(255,255,255,0.04) 0, transparent 40%),
+    var(--bg);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+#app{max-width:900px;margin:0 auto;padding:20px 18px 60px;}
+
+.title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{width:46px;height:46px;border-radius:50%;background:var(--gold);border:2.5px dashed var(--bg-deep);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.brand h1{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;color:var(--gold);margin:0;letter-spacing:.3px;}
+.brand p{margin:0;font-size:12px;color:#BFE0D3;letter-spacing:.6px;text-transform:uppercase;font-weight:700;}
+
+.pill-btn{
+  font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
+  background:transparent;color:#CFE9DE;border:2px solid #2E5C51;
+  border-radius:999px;padding:9px 16px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:transform .12s ease, background .12s ease;
+}
+.pill-btn:hover{background:#164039;transform:translateY(-1px);}
+.pill-btn:active{transform:translateY(0);}
+.pill-btn.solid{background:var(--gold);color:#3B2900;border-color:var(--gold);}
+.pill-btn.solid:hover{background:#FFC65A;}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--card-line);
+  border-radius:16px;
+  box-shadow:0 5px 0 rgba(0,0,0,.14);
+  padding:18px;
+}
+
+.section-label{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:#BFE0D3;margin:26px 0 12px;}
+
+.kid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
+.kid-tile{
+  background:var(--card);border:1px solid var(--card-line);border-radius:18px;
+  padding:18px 12px;text-align:center;cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.14);
+  transition:transform .12s ease;
+}
+.kid-tile:hover{transform:translateY(-3px);}
+.kid-tile:active{transform:translateY(0);}
+
+.badge{width:78px;height:78px;border-radius:50%;margin:0 auto 10px;position:relative;display:flex;align-items:center;justify-content:center;}
+.badge .ring{position:absolute;inset:0;border-radius:50%;border:5px solid var(--kc,var(--gold));}
+.badge .face{position:absolute;inset:8px;border-radius:50%;background:#fff;border:2px dashed var(--kc,var(--gold));display:flex;align-items:center;justify-content:center;font-size:32px;}
+
+.kid-name{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:17px;color:var(--ink);margin:0 0 4px;}
+.kid-points{font-family:'Space Mono',monospace;font-weight:700;font-size:13px;color:var(--ink-soft);}
+
+.dash-header{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
+.dash-header .badge{width:58px;height:58px;margin:0;}
+.dash-header .badge .face{font-size:24px;}
+.dash-header h2{font-family:'Baloo 2',sans-serif;font-size:22px;color:var(--gold);margin:0;}
+.point-total{font-family:'Space Mono',monospace;color:#BFE0D3;font-size:13px;font-weight:700;}
+.point-total b{color:var(--gold);font-size:16px;}
+
+.tabs{display:flex;gap:8px;margin:18px 0 16px;flex-wrap:wrap;}
+.tab{
+  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;
+  background:transparent;border:2px solid #2E5C51;color:#CFE9DE;
+  border-radius:12px;padding:8px 14px;cursor:pointer;
+}
+.tab.active{background:var(--gold);border-color:var(--gold);color:#3B2900;}
+
+.item-list{display:flex;flex-direction:column;gap:10px;}
+.item-card{
+  background:var(--card);border:1px solid var(--card-line);border-radius:14px;
+  padding:12px 14px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 3px 0 rgba(0,0,0,.1);
+}
+.item-emoji{font-size:26px;width:40px;text-align:center;flex-shrink:0;}
+.item-body{flex:1;min-width:0;}
+.item-name{font-weight:800;font-size:15px;color:var(--ink);}
+.item-sub{font-family:'Space Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:2px;}
+.item-action{flex-shrink:0;}
+
+.btn{
+  font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13.5px;
+  border:none;border-radius:10px;padding:9px 14px;cursor:pointer;
+  color:#fff;box-shadow:0 3px 0 rgba(0,0,0,.18);
+}
+.btn:active{transform:translateY(2px);box-shadow:none;}
+.btn.go{background:var(--green);}
+.btn.go:disabled{background:#B9C4BD;cursor:not-allowed;box-shadow:none;}
+.btn.warn{background:var(--coral);}
+.btn.bad{background:var(--red);}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1.5px solid var(--card-line);box-shadow:none;}
+
+.status-chip{
+  font-family:'Space Mono',monospace;font-size:11px;font-weight:700;
+  padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;
+}
+.status-chip.pending{background:#FCEBC8;color:#8A5A00;}
+.status-chip.approved{background:#DBF0E1;color:var(--green-deep);}
+.status-chip.rejected{background:#F7DAD5;color:var(--red-deep);}
+.status-chip.fulfilled{background:#DBEFF0;color:#1F6E73;}
+.status-chip.cancelled{background:#EFEAE0;color:var(--ink-soft);}
+
+.empty{
+  text-align:center;padding:34px 16px;color:#8FBBA9;font-weight:700;
+  font-family:'Baloo 2',sans-serif;font-size:15px;
+}
+
+.toast{
+  position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(0);
+  background:var(--gold);color:#3B2900;font-family:'Baloo 2',sans-serif;font-weight:700;
+  padding:12px 20px;border-radius:12px;box-shadow:0 6px 16px rgba(0,0,0,.35);
+  z-index:999;font-size:14px;opacity:0;transition:opacity .25s ease, transform .25s ease;
+  pointer-events:none;max-width:90%;text-align:center;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(-6px);}
+
+.pin-wrap{max-width:280px;margin:40px auto;text-align:center;}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin:20px 0;}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);}
+.pin-dot.filled{background:var(--gold);}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.pin-key{
+  font-family:'Space Mono',monospace;font-weight:700;font-size:20px;
+  background:#164039;color:#EAF6F0;border:2px solid #2E5C51;border-radius:12px;
+  padding:16px 0;cursor:pointer;
+}
+.pin-key:active{background:#1E5148;}
+.pin-key.clear{font-size:13px;font-family:'Baloo 2',sans-serif;}
+
+.form-box{background:#F3ECD9;border:1px dashed var(--card-line);border-radius:14px;padding:14px;margin-top:12px;}
+.form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.form-row input, .form-row select{
+  font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
+  padding:9px 11px;border-radius:9px;border:1.5px solid var(--card-line);
+  background:#fff;color:var(--ink);flex:1;min-width:90px;
+}
+.emoji-choices{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.emoji-choices button{
+  font-size:18px;background:#fff;border:1.5px solid var(--card-line);border-radius:9px;
+  padding:6px 9px;cursor:pointer;
+}
+.emoji-choices button.sel{border-color:var(--gold);background:#FFF3D8;}
+
+.manage-row{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--card-line);border-radius:12px;padding:10px 12px;}
+.manage-row input[type=text], .manage-row input[type=number]{
+  font-family:'Nunito',sans-serif;font-weight:700;padding:7px 9px;border-radius:8px;
+  border:1.5px solid var(--card-line);width:70px;
+}
+.manage-row input.name-field{flex:1;width:auto;}
+
+.back-link{background:none;border:none;color:#BFE0D3;font-family:'Baloo 2',sans-serif;font-weight:700;
+  cursor:pointer;font-size:14px;padding:0;margin-bottom:14px;display:inline-flex;align-items:center;gap:5px;}
+.back-link:hover{color:var(--gold);}
+
+.hint{font-size:12px;color:var(--ink-soft);margin:6px 0 0;}
+
+.week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:8px;}
+.week-day{background:var(--card);border:1px solid var(--card-line);border-radius:10px;padding:8px 2px;text-align:center;}
+.week-day.today{border-color:var(--gold);border-width:2px;}
+.week-day.full{background:#DBF0E1;}
+.week-day.partial{background:#FCEBC8;}
+.week-day.empty{background:#F7DAD5;}
+.week-day.future{opacity:.45;}
+.week-day-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-soft);text-transform:uppercase;}
+.week-day-num{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;color:var(--ink);margin:2px 0;}
+.week-day-icon{font-size:14px;}
+
+@media (max-width:520px){
+  .brand h1{font-size:21px;}
+  .kid-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const STORAGE_KEY = 'chorecamp-data-v1';
+
+const storageAPI = (window.storage) ? window.storage : {
+  async get(key){
+    const raw = localStorage.getItem(key);
+    if(raw === null) throw new Error('not found');
+    return { key, value: raw, shared: false };
+  },
+  async set(key, value){
+    localStorage.setItem(key, value);
+    return { key, value, shared: false };
+  }
+};
+
+let data = null;
+let view = { screen: 'loading' };
+let parentSession = false;
+let pinBuffer = '';
+
+const KID_EMOJI = ['🦊','🐻','🐼','🦁','🐯','🐨','🐸','🐧','🦄','🐙','🦋','🐢'];
+const CHORE_EMOJI = ['🛏️','🐾','🗑️','🍽️','🧹','📚','🧺','🪥','🧼','🚗','🌱','📦'];
+const REWARD_EMOJI = ['📱','🎬','🍦','🌙','💵','🎮','🍕','🎨','🏊','🎟️'];
+const GOAL_EMOJI = ['🎯','🚲','🎮','🧩','🎧','⚽','🛹','📷','🐶','🎁'];
+const ASSET_EMOJI = ['🧸','🌱','🚀','🎮','🍔','🎬','⚡','🏠','🐾','📦'];
+const SKILL_EMOJI = ['🎹','💻','⚽','🎨','📖','🎤','🏊','🥋','🧗','♟️'];
+
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+function defaultData(){
+  return {
+    pin: '0000',
+    kids: [
+      { id: uid(), name: 'Emma', emoji: '🦊', color: '#EF6F53', points: 40, cashBalance: 0 },
+      { id: uid(), name: 'Jack', emoji: '🐻', color: '#4C9A6A', points: 25, cashBalance: 0 }
+    ],
+    chores: [
+      { id: uid(), name: 'Make your bed', points: 5, emoji: '🛏️', frequency: 'daily' },
+      { id: uid(), name: 'Feed the pet', points: 5, emoji: '🐾', frequency: 'daily' },
+      { id: uid(), name: 'Take out trash', points: 10, emoji: '🗑️', frequency: 'daily' },
+      { id: uid(), name: 'Do the dishes', points: 15, emoji: '🍽️', frequency: 'daily' },
+      { id: uid(), name: 'Homework done', points: 10, emoji: '📚', frequency: 'daily' },
+      { id: uid(), name: 'Clean your room', points: 20, emoji: '🧽', frequency: 'weekly' }
+    ],
+    rewards: [
+      { id: uid(), name: '30 min extra screen time', cost: 50, emoji: '📱', cash: 0 },
+      { id: uid(), name: 'Pick movie night film', cost: 75, emoji: '🎬', cash: 0 },
+      { id: uid(), name: 'Ice cream trip', cost: 150, emoji: '🍦', cash: 0 },
+      { id: uid(), name: 'Stay up 30 min late', cost: 60, emoji: '🌙', cash: 0 },
+      { id: uid(), name: '$5 cash', cost: 200, emoji: '💵', cash: 5 }
+    ],
+    completions: [],
+    redemptions: [],
+    bankTx: [],
+    savingsGoals: [],
+    investAssets: [
+      { id: uid(), name: 'Big Toy Co.', emoji: '🧸', price: 10, blurb: 'Makes toys and games kids love.' },
+      { id: uid(), name: 'Green Energy Fund', emoji: '🌱', price: 6, blurb: 'Companies building clean power.' },
+      { id: uid(), name: 'Space Explorers Inc.', emoji: '🚀', price: 15, blurb: 'Builds rockets and satellites.' }
+    ],
+    holdings: [],
+    skills: [
+      { id: uid(), name: 'Piano', emoji: '🎹', points: 10 },
+      { id: uid(), name: 'Coding', emoji: '💻', points: 15 },
+      { id: uid(), name: 'Soccer', emoji: '⚽', points: 10 },
+      { id: uid(), name: 'Reading', emoji: '📖', points: 5 }
+    ],
+    skillLogs: [],
+    bonusAwards: []
+  };
+}
+
+async function loadData(){
+  try{
+    const res = await storageAPI.get(STORAGE_KEY, true);
+    data = res && res.value ? JSON.parse(res.value) : defaultData();
+  }catch(e){
+    data = defaultData();
+  }
+  if(!data.pin) data.pin = '0000';
+  if(!Array.isArray(data.bankTx)) data.bankTx = [];
+  if(!Array.isArray(data.savingsGoals)) data.savingsGoals = [];
+  if(!Array.isArray(data.investAssets)) data.investAssets = [];
+  if(!Array.isArray(data.holdings)) data.holdings = [];
+  if(!Array.isArray(data.skills)) data.skills = [];
+  if(!Array.isArray(data.skillLogs)) data.skillLogs = [];
+  if(!Array.isArray(data.bonusAwards)) data.bonusAwards = [];
+  data.kids.forEach(k => { if(typeof k.cashBalance !== 'number') k.cashBalance = 0; });
+  data.chores.forEach(c => { if(c.frequency !== 'weekly' && c.frequency !== 'daily') c.frequency = 'daily'; });
+  data.rewards.forEach(r => { if(typeof r.cash !== 'number') r.cash = 0; });
+  data.bankTx.forEach(t => { if(!t.purpose) t.purpose = 'general'; });
+  await saveData();
+}
+
+async function saveData(){
+  try{
+    await storageAPI.set(STORAGE_KEY, JSON.stringify(data), true);
+  }catch(e){
+    showToast("Couldn't save — check connection");
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._tm);
+  showToast._tm = setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function findKid(id){ return data.kids.find(k=>k.id===id); }
+function findChore(id){ return data.chores.find(c=>c.id===id); }
+function findReward(id){ return data.rewards.find(r=>r.id===id); }
+function findAsset(id){ return data.investAssets.find(a=>a.id===id); }
+function findGoal(id){ return data.savingsGoals.find(g=>g.id===id); }
+function findHolding(id){ return data.holdings.find(h=>h.id===id); }
+function findSkill(id){ return data.skills.find(s=>s.id===id); }
+
+function bonusMeta(category){
+  if(category==='kindness') return { icon:'💛', label:'Kindness' };
+  if(category==='consistency') return { icon:'🔁', label:'Consistency' };
+  return { icon:'⭐', label:'Bonus' };
+}
+
+function txTypeMeta(type){
+  if(type==='deposit') return { icon:'⬆️', label:'Deposit' };
+  if(type==='withdraw') return { icon:'⬇️', label:'Withdrawal' };
+  if(type==='purchase') return { icon:'🛒', label:'Online purchase' };
+  if(type==='donate') return { icon:'🎁', label:'Donation' };
+  return { icon:'💰', label:type };
+}
+
+function badgeHTML(emoji, color, size){
+  size = size || 78;
+  return `<div class="badge" style="width:${size}px;height:${size}px;--kc:${color}">
+    <div class="ring"></div><div class="face" style="font-size:${Math.round(size*0.41)}px">${emoji}</div>
+  </div>`;
+}
+
+async function render(){
+  const app = document.getElementById('app');
+  if(view.screen === 'loading'){
+    app.innerHTML = `<div class="empty">Loading Chore Champions…</div>`;
+    return;
+  }
+  if(view.screen === 'home') return renderHome(app);
+  if(view.screen === 'kid') return renderKid(app);
+  if(view.screen === 'parent') return renderParent(app);
+}
+
+function renderHome(app){
+  const kids = data.kids.map(k => {
+    const streak = currentStreak(k.id);
+    return `
+    <div class="kid-tile" data-kid="${k.id}">
+      ${badgeHTML(k.emoji, k.color)}
+      <div class="kid-name">${esc(k.name)}</div>
+      <div class="kid-points">${k.points} pts${streak>0?` · 🔥 ${streak}`:''}</div>
+    </div>
+  `;
+  }).join('');
+
+  app.innerHTML = `
+    <div class="title-row">
+      <div class="brand">
+        <div class="brand-mark">🏆</div>
+        <div>
+          <h1>Chore Champions</h1>
+          <p>Earn your badges</p>
+        </div>
+      </div>
+      <button class="pill-btn" id="parentBtn">🔒 Parent mode</button>
+    </div>
+    <div class="section-label">Who's earning points today?</div>
+    <div class="kid-grid">${kids || ''}</div>
+    ${data.kids.length===0 ? '<div class="empty">No kids yet. Head to Parent mode to add one.</div>' : ''}
+  `;
+
+  app.querySelectorAll('.kid-tile').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      view = { screen:'kid', kidId: el.dataset.kid, tab:'chores' };
+      render();
+    });
+  });
+  document.getElementById('parentBtn').addEventListener('click', ()=>{
+    pinBuffer = '';
+    view = { screen:'parent', tab: parentSession ? 'approvals' : 'pin' };
+    render();
+  });
+}
+
+function isToday(ts){
+  const d = new Date(ts), n = new Date();
+  return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+}
+
+function isSameDay(ts, dayTs){
+  const d = new Date(ts), n = new Date(dayTs);
+  return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+}
+
+function startOfDay(ts){
+  const d = new Date(ts); d.setHours(0,0,0,0); return d.getTime();
+}
+
+function startOfWeek(ts){
+  const d = new Date(ts); d.setHours(0,0,0,0);
+  d.setDate(d.getDate() - d.getDay());
+  return d.getTime();
+}
+
+function isSameWeek(ts, refTs){
+  return startOfWeek(ts) === startOfWeek(refTs === undefined ? Date.now() : refTs);
+}
+
+function weekDates(){
+  const start = startOfWeek(Date.now());
+  const days = [];
+  for(let i=0;i<7;i++){
+    const d = new Date(start);
+    d.setDate(d.getDate()+i);
+    days.push(d);
+  }
+  return days;
+}
+
+function dailyChoresList(){
+  return data.chores.filter(c => c.frequency !== 'weekly');
+}
+
+function dayCompletionSet(kidId, dayTs){
+  return new Set(
+    data.completions
+      .filter(c => c.kidId===kidId && c.status!=='rejected' && isSameDay(c.ts, dayTs))
+      .map(c => c.choreId)
+  );
+}
+
+function isDayFullyDone(kidId, dayTs){
+  const chores = dailyChoresList();
+  if(chores.length===0) return false;
+  const done = dayCompletionSet(kidId, dayTs);
+  return chores.every(c => done.has(c.id));
+}
+
+function currentStreak(kidId){
+  let streak = 0;
+  let cursor = startOfDay(Date.now());
+  if(!isDayFullyDone(kidId, cursor)){
+    cursor = startOfDay(cursor - 86400000);
+  }
+  while(isDayFullyDone(kidId, cursor)){
+    streak++;
+    cursor = startOfDay(cursor - 86400000);
+  }
+  return streak;
+}
+
+function bestStreak(kidId){
+  const doneTs = data.completions.filter(c=>c.kidId===kidId && c.status!=='rejected').map(c=>c.ts);
+  if(!doneTs.length) return 0;
+  let cursor = startOfDay(Math.min(...doneTs));
+  const end = startOfDay(Date.now());
+  let best = 0, run = 0;
+  while(cursor <= end){
+    if(isDayFullyDone(kidId, cursor)){ run++; best = Math.max(best, run); }
+    else { run = 0; }
+    cursor = startOfDay(cursor + 86400000);
+  }
+  return best;
+}
+
+function completionLabel(status){
+  return status === 'pending' ? 'submitted' : status;
+}
+
+function bankLabel(status){
+  return status === 'pending' ? 'requested' : status;
+}
+
+function fmtMoney(n){
+  return '$' + (Math.round((n||0)*100)/100).toFixed(2);
+}
+
+function renderSaveSection(kid){
+  const goals = data.savingsGoals.filter(g=>g.kidId===kid.id);
+  const gf = view.goalForm || {};
+  const goalsHtml = goals.length ? goals.map(g=>{
+    const pct = g.target>0 ? Math.min(100, Math.round((g.saved/g.target)*100)) : 0;
+    const done = g.target>0 && g.saved >= g.target;
+    return `
+    <div class="item-card" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="item-emoji">${g.emoji}</div>
+        <div class="item-body">
+          <div class="item-name">${esc(g.name)}${done?' 🎉':''}</div>
+          <div class="item-sub">${fmtMoney(g.saved)} of ${fmtMoney(g.target)}</div>
+        </div>
+        <button class="btn ghost" data-delgoal="${g.id}">Remove</button>
+      </div>
+      <div style="background:#EFE7CF;border-radius:999px;height:10px;margin:10px 0 8px;overflow:hidden;">
+        <div style="background:${done?'var(--green)':'var(--gold)'};height:100%;width:${pct}%;"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn go" data-goalopen="${g.id}" data-mode="add">Add money</button>
+        <button class="btn warn" data-goalopen="${g.id}" data-mode="take" ${g.saved<=0?'disabled':''}>Take money out</button>
+      </div>
+      ${gf.id===g.id && gf.mode==='add' ? `
+        <div class="form-box">
+          <div class="form-row"><input type="number" id="goalAmt" step="0.01" min="0.01" max="${kid.cashBalance}" placeholder="Amount"></div>
+          <p class="hint">You have ${fmtMoney(kid.cashBalance)} ready to use.</p>
+          <button class="btn go" id="goalSubmit" data-goal="${g.id}" data-mode="add">Move into ${esc(g.name)}</button>
+        </div>` : ''}
+      ${gf.id===g.id && gf.mode==='take' ? `
+        <div class="form-box">
+          <div class="form-row"><input type="number" id="goalAmt" step="0.01" min="0.01" max="${g.saved}" placeholder="Amount"></div>
+          <button class="btn warn" id="goalSubmit" data-goal="${g.id}" data-mode="take">Move back to ready-to-use</button>
+        </div>` : ''}
+    </div>`;
+  }).join('') : `<div class="empty">No savings goals yet — start one below!</div>`;
+
+  return `
+    <div class="item-list" style="margin-bottom:16px;">${goalsHtml}</div>
+    <div class="form-box">
+      <div class="section-label" style="margin-top:0">Start a new goal</div>
+      <div class="emoji-choices" id="goalEmojiChoices">${GOAL_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+      <div class="form-row">
+        <input type="text" id="newGoalName" placeholder="What are you saving for?">
+        <input type="number" id="newGoalTarget" placeholder="Goal amount" step="0.01" style="max-width:120px;">
+      </div>
+      <button class="btn go" id="addGoalBtn">Create goal</button>
+    </div>
+  `;
+}
+
+function renderInvestSection(kid){
+  const holdings = data.holdings.filter(h=>h.kidId===kid.id);
+  const totalValue = holdings.reduce((s,h)=>{ const a=findAsset(h.assetId); return s + (a ? h.units*a.price : 0); }, 0);
+  const totalCost = holdings.reduce((s,h)=>s+h.totalCost, 0);
+  const gain = totalValue - totalCost;
+  const invf = view.investForm || {};
+
+  const holdingsHtml = holdings.map(h=>{
+    const a = findAsset(h.assetId);
+    if(!a) return '';
+    const value = h.units*a.price;
+    const g = value - h.totalCost;
+    const open = invf.mode==='sell' && invf.holdingId===h.id;
+    return `
+    <div class="item-card" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="item-emoji">${a.emoji}</div>
+        <div class="item-body">
+          <div class="item-name">${esc(a.name)}</div>
+          <div class="item-sub">${h.units.toFixed(2)} shares · ${fmtMoney(value)} · ${g>=0?'+':''}${fmtMoney(g)}</div>
+        </div>
+        <button class="btn warn" data-sellopen="${h.id}">Sell</button>
+      </div>
+      ${open ? `
+        <div class="form-box">
+          <div class="form-row"><input type="number" id="investAmt" step="0.01" min="0.01" max="${value.toFixed(2)}" placeholder="Amount to sell ($)"></div>
+          <button class="btn warn" id="sellSubmit" data-holding="${h.id}">Sell</button>
+        </div>` : ''}
+    </div>`;
+  }).join('');
+
+  const assetsHtml = data.investAssets.map(a=>{
+    const open = invf.mode==='buy' && invf.assetId===a.id;
+    return `
+    <div class="item-card" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="item-emoji">${a.emoji}</div>
+        <div class="item-body">
+          <div class="item-name">${esc(a.name)}</div>
+          <div class="item-sub">${fmtMoney(a.price)} / share${a.blurb ? ' · '+esc(a.blurb) : ''}</div>
+        </div>
+        <button class="btn go" data-buyopen="${a.id}">Invest</button>
+      </div>
+      ${open ? `
+        <div class="form-box">
+          <div class="form-row"><input type="number" id="investAmt" step="0.01" min="0.01" max="${kid.cashBalance}" placeholder="Amount to invest ($)"></div>
+          <p class="hint">You have ${fmtMoney(kid.cashBalance)} ready to use.</p>
+          <button class="btn go" id="buySubmit" data-asset="${a.id}">Buy shares</button>
+        </div>` : ''}
+    </div>`;
+  }).join('');
+
+  return `
+    <p class="hint" style="margin-bottom:14px;">This is a pretend practice portfolio for learning — Mom and Dad set these prices by hand, it isn't the real stock market.</p>
+    ${holdings.length ? `
+      <div class="card" style="margin-bottom:14px;">
+        <div class="section-label" style="margin-top:0">Your portfolio</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;color:var(--green-deep);">${fmtMoney(totalValue)}</div>
+        <div class="hint" style="margin-top:2px;">${gain>=0?'Up ':'Down '}${fmtMoney(Math.abs(gain))} since you invested</div>
+      </div>
+      <div class="item-list" style="margin-bottom:20px;">${holdingsHtml}</div>
+    ` : ''}
+    <div class="section-label">Available to invest in</div>
+    <div class="item-list">${assetsHtml}</div>
+  `;
+}
+
+function renderSpendSection(kid){
+  const mode = view.spendForm;
+  return `
+    <div class="item-list">
+      <div class="item-card">
+        <div class="item-emoji">🛒</div>
+        <div class="item-body">
+          <div class="item-name">Buy something online</div>
+          <div class="item-sub">Tell Mom &amp; Dad what to order</div>
+        </div>
+        <button class="btn go" id="openBuyOnline">Choose</button>
+      </div>
+      <div class="item-card">
+        <div class="item-emoji">💵</div>
+        <div class="item-body">
+          <div class="item-name">Withdraw cash to spend</div>
+          <div class="item-sub">Get cash in hand</div>
+        </div>
+        <button class="btn warn" id="openSpendWithdraw">Choose</button>
+      </div>
+    </div>
+    ${mode==='buy' ? `
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">What do you want to buy?</div>
+        <div class="form-row">
+          <input type="text" id="spendItem" placeholder="Item name">
+          <input type="number" id="spendAmt" step="0.01" min="0.01" placeholder="Cost">
+        </div>
+        <div class="form-row"><input type="text" id="spendLink" placeholder="Link (optional)"></div>
+        <button class="btn go" id="spendSubmit" data-kind="purchase">Send request</button>
+      </div>` : ''}
+    ${mode==='withdraw' ? `
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Withdraw cash</div>
+        <div class="form-row"><input type="number" id="spendAmt" step="0.01" min="0.01" max="${kid.cashBalance}" placeholder="Amount"></div>
+        <p class="hint">You have ${fmtMoney(kid.cashBalance)} ready to use.</p>
+        <button class="btn warn" id="spendSubmit" data-kind="withdraw">Send request</button>
+      </div>` : ''}
+  `;
+}
+
+function renderGiveSection(kid){
+  const mode = view.giveForm;
+  return `
+    <div class="item-list">
+      <div class="item-card">
+        <div class="item-emoji">🎁</div>
+        <div class="item-body">
+          <div class="item-name">Give online</div>
+          <div class="item-sub">Donate to a cause or send a gift</div>
+        </div>
+        <button class="btn go" id="openGiveOnline">Choose</button>
+      </div>
+      <div class="item-card">
+        <div class="item-emoji">💵</div>
+        <div class="item-body">
+          <div class="item-name">Withdraw cash to give</div>
+          <div class="item-sub">Get cash in hand to give in person</div>
+        </div>
+        <button class="btn warn" id="openGiveWithdraw">Choose</button>
+      </div>
+    </div>
+    ${mode==='donate' ? `
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Who or what are you giving to?</div>
+        <div class="form-row">
+          <input type="text" id="giveItem" placeholder="Cause or person">
+          <input type="number" id="giveAmt" step="0.01" min="0.01" placeholder="Amount">
+        </div>
+        <div class="form-row"><input type="text" id="giveLink" placeholder="Link (optional)"></div>
+        <button class="btn go" id="giveSubmit" data-kind="donate">Send request</button>
+      </div>` : ''}
+    ${mode==='withdraw' ? `
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Withdraw cash</div>
+        <div class="form-row"><input type="number" id="giveAmt" step="0.01" min="0.01" max="${kid.cashBalance}" placeholder="Amount"></div>
+        <p class="hint">You have ${fmtMoney(kid.cashBalance)} ready to use.</p>
+        <button class="btn warn" id="giveSubmit" data-kind="withdraw">Send request</button>
+      </div>` : ''}
+  `;
+}
+
+const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function renderWeeklySection(kid){
+  const streak = currentStreak(kid.id);
+  const best = bestStreak(kid.id);
+  const dChores = dailyChoresList();
+  const today0 = startOfDay(Date.now());
+
+  const days = weekDates().map(d=>{
+    const dayTs = d.getTime();
+    const isFuture = dayTs > today0;
+    const isTodayCell = dayTs === today0;
+    let stateClass = 'future', icon = '—';
+    if(!isFuture){
+      const done = dayCompletionSet(kid.id, dayTs);
+      const total = dChores.length;
+      const doneCount = dChores.filter(c=>done.has(c.id)).length;
+      if(total === 0){ stateClass = 'future'; icon = '—'; }
+      else if(doneCount === total){ stateClass = 'full'; icon = '✅'; }
+      else if(doneCount > 0){ stateClass = 'partial'; icon = `${doneCount}/${total}`; }
+      else { stateClass = 'empty'; icon = '·'; }
+    }
+    return `<div class="week-day ${stateClass}${isTodayCell?' today':''}">
+      <div class="week-day-label">${DAY_LABELS[d.getDay()]}</div>
+      <div class="week-day-num">${d.getDate()}</div>
+      <div class="week-day-icon">${icon}</div>
+    </div>`;
+  }).join('');
+
+  const weeklyChores = data.chores.filter(c=>c.frequency==='weekly');
+  const weeklyDone = new Set(
+    data.completions.filter(c=>c.kidId===kid.id && c.status!=='rejected' && isSameWeek(c.ts)).map(c=>c.choreId)
+  );
+
+  return `
+    <div class="card" style="text-align:center;margin-bottom:16px;">
+      <div class="section-label" style="margin-top:0">Current streak</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--gold-deep);">${streak>0?'🔥 ':''}${streak} day${streak===1?'':'s'}</div>
+      <p class="hint">Best streak so far: ${best} day${best===1?'':'s'}</p>
+    </div>
+    <div class="section-label">This week</div>
+    <div class="week-grid">${days}</div>
+    ${dChores.length===0 ? `<p class="hint" style="margin-bottom:20px;">Add daily chores in Parent mode to start tracking a streak.</p>` : `<p class="hint" style="margin-bottom:20px;">A full day means every daily chore was done that day.</p>`}
+    ${weeklyChores.length ? `
+      <div class="section-label">This week's weekly chores</div>
+      <div class="item-list">${weeklyChores.map(c=>`
+        <div class="item-card">
+          <div class="item-emoji">${c.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(c.name)}</div>
+            <div class="item-sub">+${c.points} pts</div>
+          </div>
+          <span class="status-chip ${weeklyDone.has(c.id)?'approved':'pending'}">${weeklyDone.has(c.id)?'done this week':'not yet'}</span>
+        </div>
+      `).join('')}</div>
+    ` : ''}
+  `;
+}
+
+function renderKid(app){
+  const kid = findKid(view.kidId);
+  if(!kid){ view={screen:'home'}; return render(); }
+  const tab = view.tab || 'chores';
+
+  const myCompletions = data.completions.filter(c=>c.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+  const myRedemptions = data.redemptions.filter(r=>r.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+  const myBankTx = data.bankTx.filter(t=>t.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+  const mySkillLogs = data.skillLogs.filter(s=>s.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+  const myBonusAwards = data.bonusAwards.filter(b=>b.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+  const doneNowIds = new Set(
+    data.chores.filter(c => {
+      const relevant = myCompletions.filter(x => x.choreId===c.id && x.status !== 'rejected');
+      if(c.frequency === 'weekly'){
+        return relevant.some(x => isSameWeek(x.ts));
+      }
+      return relevant.some(x => isToday(x.ts));
+    }).map(c => c.id)
+  );
+
+  let body = '';
+  if(tab === 'chores'){
+    const availableChores = data.chores.filter(c => !doneNowIds.has(c.id));
+    if(data.chores.length === 0){
+      body = `<div class="empty">No chores set up yet.</div>`;
+    } else if(availableChores.length === 0){
+      body = `<div class="empty">All done for now, nice work! 🎉</div>`;
+    } else {
+      body = `<div class="item-list">${availableChores.map(c=>`
+        <div class="item-card">
+          <div class="item-emoji">${c.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(c.name)}</div>
+            <div class="item-sub">+${c.points} pts · ${c.frequency==='weekly' ? 'once a week' : 'daily'}</div>
+          </div>
+          <div class="item-action"><button class="btn go" data-chore="${c.id}">I did it!</button></div>
+        </div>
+      `).join('')}</div>`;
+    }
+  } else if(tab === 'weekly'){
+    body = renderWeeklySection(kid);
+  } else if(tab === 'skills'){
+    const pendingSkill = mySkillLogs.filter(s=>s.status==='pending');
+    const openSkillId = view.skillForm;
+    body = `
+      <p class="hint" style="margin-bottom:14px;">Log something new you learned or got better at — piano songs, code projects, sports skills, anything. Mom &amp; Dad will check it off.</p>
+      <div class="item-list">${data.skills.map(s=>`
+        <div class="item-card" style="flex-direction:column;align-items:stretch;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="item-emoji">${s.emoji}</div>
+            <div class="item-body">
+              <div class="item-name">${esc(s.name)}</div>
+              <div class="item-sub">+${s.points} pts per achievement</div>
+            </div>
+            <button class="btn go" data-skillopen="${s.id}">Log it</button>
+          </div>
+          ${openSkillId===s.id ? `
+            <div class="form-box">
+              <div class="form-row"><input type="text" id="skillDetail" placeholder="What did you learn or achieve?"></div>
+              <button class="btn go" id="skillSubmit" data-skill="${s.id}">Send for review</button>
+            </div>` : ''}
+        </div>
+      `).join('') || '<div class="empty">No skill areas set up yet.</div>'}</div>
+      <div class="section-label">Waiting on Mom &amp; Dad</div>
+      ${pendingSkill.length ? `<div class="item-list">${pendingSkill.map(s=>`
+        <div class="item-card">
+          <div class="item-emoji">${findSkill(s.skillId) ? findSkill(s.skillId).emoji : '⭐'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(s.detail)}</div>
+            <div class="item-sub">${esc(s.skillName)} · +${s.points} pts</div>
+          </div>
+          <span class="status-chip pending">submitted</span>
+        </div>
+      `).join('')}</div>` : `<div class="empty">Nothing waiting right now.</div>`}
+    `;
+  } else if(tab === 'rewards'){
+    body = data.rewards.length ? `<div class="item-list">${data.rewards.map(r=>{
+      const can = kid.points >= r.cost;
+      return `<div class="item-card">
+        <div class="item-emoji">${r.emoji}</div>
+        <div class="item-body">
+          <div class="item-name">${esc(r.name)}</div>
+          <div class="item-sub">${r.cost} pts${r.cash>0 ? ' · pays '+fmtMoney(r.cash)+' to your bank' : ''}</div>
+        </div>
+        <div class="item-action"><button class="btn warn" data-reward="${r.id}" ${can?'':'disabled'} style="${can?'':'background:#B9C4BD'}">Redeem</button></div>
+      </div>`;
+    }).join('')}</div>` : `<div class="empty">No rewards set up yet.</div>`;
+  } else if(tab === 'money'){
+    const pendingTx = myBankTx.filter(t=>t.status==='pending');
+    const section = view.moneySection || 'save';
+    let sectionBody = '';
+    if(section === 'save') sectionBody = renderSaveSection(kid);
+    else if(section === 'invest') sectionBody = renderInvestSection(kid);
+    else if(section === 'spend') sectionBody = renderSpendSection(kid);
+    else if(section === 'give') sectionBody = renderGiveSection(kid);
+
+    body = `
+      <div class="card" style="text-align:center;margin-bottom:16px;">
+        <div class="section-label" style="margin-top:0">Ready to use</div>
+        <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--green-deep);">${fmtMoney(kid.cashBalance)}</div>
+        <p class="hint">Mom and Dad hold onto this for you, just like a real bank.</p>
+        <button class="btn go" id="openDeposit">Deposit cash</button>
+        ${view.depositForm ? `
+          <div class="form-box" style="text-align:left;">
+            <div class="form-row">
+              <input type="number" id="depositAmt" placeholder="Amount" step="0.01" min="0.01">
+              <input type="text" id="depositNote" placeholder="What's it from? (optional)">
+            </div>
+            <button class="btn go" id="depositSubmit">Send deposit request</button>
+          </div>` : ''}
+      </div>
+      <div class="tabs">
+        <button class="tab ${section==='save'?'active':''}" data-money="save">Save</button>
+        <button class="tab ${section==='invest'?'active':''}" data-money="invest">Invest</button>
+        <button class="tab ${section==='spend'?'active':''}" data-money="spend">Spend</button>
+        <button class="tab ${section==='give'?'active':''}" data-money="give">Give</button>
+      </div>
+      ${sectionBody}
+      <div class="section-label">Requests waiting on Mom &amp; Dad</div>
+      ${pendingTx.length ? `<div class="item-list">${pendingTx.map(t=>{
+        const meta = txTypeMeta(t.type);
+        return `<div class="item-card">
+          <div class="item-emoji">${meta.icon}</div>
+          <div class="item-body">
+            <div class="item-name">${meta.label} · ${fmtMoney(t.amount)}</div>
+            <div class="item-sub">${t.note ? esc(t.note) : new Date(t.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip pending">${bankLabel(t.status)}</span>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">Nothing waiting right now.</div>`}
+    `;
+  } else if(tab === 'activity'){
+    const rows = [
+      ...myCompletions.map(c=>({ ts:c.ts, node:`
+        <div class="item-card">
+          <div class="item-emoji">${findChore(c.choreId) ? findChore(c.choreId).emoji : '✅'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(c.choreName)}</div>
+            <div class="item-sub">+${c.points} pts · ${new Date(c.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip ${c.status}">${completionLabel(c.status)}</span>
+        </div>`})),
+      ...myRedemptions.map(r=>({ ts:r.ts, node:`
+        <div class="item-card">
+          <div class="item-emoji">${findReward(r.rewardId) ? findReward(r.rewardId).emoji : '🎁'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(r.rewardName)}</div>
+            <div class="item-sub">-${r.cost} pts · ${new Date(r.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip ${r.status}">${r.status}</span>
+        </div>`})),
+      ...myBankTx.map(t=>({ ts:t.ts, node:(()=>{ const meta = txTypeMeta(t.type); return `
+        <div class="item-card">
+          <div class="item-emoji">${meta.icon}</div>
+          <div class="item-body">
+            <div class="item-name">${meta.label} · ${fmtMoney(t.amount)}</div>
+            <div class="item-sub">${t.note ? esc(t.note)+' · ' : ''}${new Date(t.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip ${t.status}">${bankLabel(t.status)}</span>
+        </div>`; })()})),
+      ...mySkillLogs.map(s=>({ ts:s.ts, node:`
+        <div class="item-card">
+          <div class="item-emoji">${findSkill(s.skillId) ? findSkill(s.skillId).emoji : '⭐'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(s.detail)}</div>
+            <div class="item-sub">${esc(s.skillName)} · +${s.points} pts · ${new Date(s.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip ${s.status}">${completionLabel(s.status)}</span>
+        </div>`})),
+      ...myBonusAwards.map(b=>({ ts:b.ts, node:(()=>{ const meta = bonusMeta(b.category); return `
+        <div class="item-card">
+          <div class="item-emoji">${meta.icon}</div>
+          <div class="item-body">
+            <div class="item-name">${meta.label} bonus${b.reason ? ' · '+esc(b.reason) : ''}</div>
+            <div class="item-sub">+${b.points} pts · ${new Date(b.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip approved">awarded</span>
+        </div>`; })()}))
+    ].sort((a,b)=>b.ts-a.ts);
+    body = rows.length ? `<div class="item-list">${rows.map(x=>x.node).join('')}</div>` : `<div class="empty">Nothing here yet — go earn some points!</div>`;
+  }
+
+  app.innerHTML = `
+    <button class="back-link" id="homeBtn">← All kids</button>
+    <div class="dash-header">
+      ${badgeHTML(kid.emoji, kid.color, 58)}
+      <div>
+        <h2>${esc(kid.name)}</h2>
+        <div class="point-total">Balance: <b>${kid.points}</b> pts &nbsp;·&nbsp; <b>${fmtMoney(kid.cashBalance)}</b> in bank</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab ${tab==='chores'?'active':''}" data-tab="chores">Chores</button>
+      <button class="tab ${tab==='weekly'?'active':''}" data-tab="weekly">Weekly</button>
+      <button class="tab ${tab==='skills'?'active':''}" data-tab="skills">Skills</button>
+      <button class="tab ${tab==='rewards'?'active':''}" data-tab="rewards">Rewards</button>
+      <button class="tab ${tab==='money'?'active':''}" data-tab="money">Money</button>
+      <button class="tab ${tab==='activity'?'active':''}" data-tab="activity">My activity</button>
+    </div>
+    ${body}
+  `;
+
+  document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
+  app.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+    view.tab = t.dataset.tab; render();
+  }));
+  app.querySelectorAll('[data-chore]').forEach(b=>b.addEventListener('click', async ()=>{
+    const chore = findChore(b.dataset.chore);
+    if(!chore) return;
+    data.completions.push({ id: uid(), kidId: kid.id, choreId: chore.id, choreName: chore.name, points: chore.points, status:'pending', ts: Date.now() });
+    await saveData();
+    showToast(`"${chore.name}" submitted for review!`);
+    render();
+  }));
+  app.querySelectorAll('[data-skillopen]').forEach(b=>b.addEventListener('click', ()=>{
+    view.skillForm = view.skillForm === b.dataset.skillopen ? null : b.dataset.skillopen;
+    render();
+  }));
+  const skillSubmit = document.getElementById('skillSubmit');
+  if(skillSubmit) skillSubmit.addEventListener('click', async ()=>{
+    const skill = findSkill(skillSubmit.dataset.skill);
+    const detail = document.getElementById('skillDetail').value.trim();
+    if(!skill) return;
+    if(!detail){ showToast('Say what you learned or achieved first.'); return; }
+    data.skillLogs.push({ id: uid(), kidId: kid.id, skillId: skill.id, skillName: skill.name, points: skill.points, detail, status:'pending', ts: Date.now() });
+    await saveData();
+    view.skillForm = null;
+    showToast(`"${detail}" sent for review!`);
+    render();
+  });
+  app.querySelectorAll('[data-reward]').forEach(b=>b.addEventListener('click', async ()=>{
+    const reward = findReward(b.dataset.reward);
+    if(!reward || kid.points < reward.cost) return;
+    kid.points -= reward.cost;
+    data.redemptions.push({ id: uid(), kidId: kid.id, rewardId: reward.id, rewardName: reward.name, cost: reward.cost, status:'pending', ts: Date.now() });
+    await saveData();
+    showToast(`Requested "${reward.name}"!`);
+    render();
+  }));
+
+  const openDeposit = document.getElementById('openDeposit');
+  if(openDeposit) openDeposit.addEventListener('click', ()=>{
+    view.depositForm = !view.depositForm;
+    render();
+  });
+  const depositSubmit = document.getElementById('depositSubmit');
+  if(depositSubmit) depositSubmit.addEventListener('click', async ()=>{
+    const amtEl = document.getElementById('depositAmt');
+    const noteEl = document.getElementById('depositNote');
+    const amount = Math.round((parseFloat(amtEl.value)||0)*100)/100;
+    if(amount <= 0){ showToast('Enter an amount first.'); return; }
+    data.bankTx.push({ id: uid(), kidId: kid.id, type:'deposit', purpose:'general', amount, note: noteEl.value.trim(), status:'pending', ts: Date.now() });
+    await saveData();
+    view.depositForm = false;
+    showToast('Deposit request sent!');
+    render();
+  });
+
+  app.querySelectorAll('[data-money]').forEach(b=>b.addEventListener('click', ()=>{
+    view.moneySection = b.dataset.money;
+    view.goalForm = null; view.investForm = null; view.spendForm = null; view.giveForm = null;
+    render();
+  }));
+
+  app.querySelectorAll('[data-goalopen]').forEach(b=>b.addEventListener('click', ()=>{
+    const id = b.dataset.goalopen, mode = b.dataset.mode;
+    view.goalForm = (view.goalForm && view.goalForm.id===id && view.goalForm.mode===mode) ? null : { id, mode };
+    render();
+  }));
+  const goalSubmit = document.getElementById('goalSubmit');
+  if(goalSubmit) goalSubmit.addEventListener('click', async ()=>{
+    const goal = findGoal(goalSubmit.dataset.goal);
+    const mode = goalSubmit.dataset.mode;
+    const amount = Math.round((parseFloat(document.getElementById('goalAmt').value)||0)*100)/100;
+    if(!goal || amount <= 0){ showToast('Enter an amount first.'); return; }
+    if(mode === 'add'){
+      if(amount > kid.cashBalance){ showToast("That's more than you have ready to use."); return; }
+      kid.cashBalance -= amount; goal.saved += amount;
+    } else {
+      if(amount > goal.saved){ showToast("That's more than this goal holds."); return; }
+      goal.saved -= amount; kid.cashBalance += amount;
+    }
+    await saveData();
+    view.goalForm = null;
+    showToast(mode==='add' ? `Moved ${fmtMoney(amount)} into ${goal.name}!` : `Moved ${fmtMoney(amount)} back to ready-to-use.`);
+    render();
+  });
+  app.querySelectorAll('[data-delgoal]').forEach(b=>b.addEventListener('click', async ()=>{
+    const goal = findGoal(b.dataset.delgoal);
+    if(!goal) return;
+    if(!confirm(`Remove "${goal.name}"? Any saved money moves back to ready-to-use.`)) return;
+    kid.cashBalance += goal.saved;
+    data.savingsGoals = data.savingsGoals.filter(g=>g.id!==goal.id);
+    await saveData(); render();
+  }));
+  const goalEmojiChoices = document.getElementById('goalEmojiChoices');
+  let selGoalEmoji = GOAL_EMOJI[0];
+  if(goalEmojiChoices) goalEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    goalEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selGoalEmoji = btn.dataset.e;
+  }));
+  const addGoalBtn = document.getElementById('addGoalBtn');
+  if(addGoalBtn) addGoalBtn.addEventListener('click', async ()=>{
+    const name = document.getElementById('newGoalName').value.trim();
+    const target = Math.round((parseFloat(document.getElementById('newGoalTarget').value)||0)*100)/100;
+    if(!name){ showToast('Give your goal a name first.'); return; }
+    if(target <= 0){ showToast('Set a goal amount first.'); return; }
+    data.savingsGoals.push({ id: uid(), kidId: kid.id, name, emoji: selGoalEmoji, target, saved: 0 });
+    await saveData();
+    showToast(`"${name}" goal started!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-buyopen]').forEach(b=>b.addEventListener('click', ()=>{
+    const assetId = b.dataset.buyopen;
+    const cur = view.investForm;
+    view.investForm = (cur && cur.mode==='buy' && cur.assetId===assetId) ? null : { mode:'buy', assetId };
+    render();
+  }));
+  app.querySelectorAll('[data-sellopen]').forEach(b=>b.addEventListener('click', ()=>{
+    const holdingId = b.dataset.sellopen;
+    const cur = view.investForm;
+    view.investForm = (cur && cur.mode==='sell' && cur.holdingId===holdingId) ? null : { mode:'sell', holdingId };
+    render();
+  }));
+  const buySubmit = document.getElementById('buySubmit');
+  if(buySubmit) buySubmit.addEventListener('click', async ()=>{
+    const asset = findAsset(buySubmit.dataset.asset);
+    const amount = Math.round((parseFloat(document.getElementById('investAmt').value)||0)*100)/100;
+    if(!asset || amount <= 0){ showToast('Enter an amount first.'); return; }
+    if(amount > kid.cashBalance){ showToast("That's more than you have ready to use."); return; }
+    const units = amount / asset.price;
+    let holding = data.holdings.find(h=>h.kidId===kid.id && h.assetId===asset.id);
+    if(holding){ holding.units += units; holding.totalCost += amount; }
+    else { data.holdings.push({ id: uid(), kidId: kid.id, assetId: asset.id, units, totalCost: amount }); }
+    kid.cashBalance -= amount;
+    await saveData();
+    view.investForm = null;
+    showToast(`Invested ${fmtMoney(amount)} in ${asset.name}!`);
+    render();
+  });
+  const sellSubmit = document.getElementById('sellSubmit');
+  if(sellSubmit) sellSubmit.addEventListener('click', async ()=>{
+    const holding = findHolding(sellSubmit.dataset.holding);
+    const asset = holding ? findAsset(holding.assetId) : null;
+    const amount = Math.round((parseFloat(document.getElementById('investAmt').value)||0)*100)/100;
+    if(!holding || !asset || amount <= 0){ showToast('Enter an amount first.'); return; }
+    const currentValue = holding.units * asset.price;
+    if(amount > currentValue + 0.005){ showToast("You don't have that much to sell."); return; }
+    const unitsToSell = Math.min(holding.units, amount / asset.price);
+    const costPortion = holding.totalCost * (unitsToSell / holding.units);
+    holding.units -= unitsToSell;
+    holding.totalCost -= costPortion;
+    kid.cashBalance += amount;
+    if(holding.units < 0.0001){ data.holdings = data.holdings.filter(h=>h.id!==holding.id); }
+    await saveData();
+    view.investForm = null;
+    showToast(`Sold ${fmtMoney(amount)} of ${asset.name}!`);
+    render();
+  });
+
+  const openBuyOnline = document.getElementById('openBuyOnline');
+  if(openBuyOnline) openBuyOnline.addEventListener('click', ()=>{ view.spendForm = view.spendForm==='buy' ? null : 'buy'; render(); });
+  const openSpendWithdraw = document.getElementById('openSpendWithdraw');
+  if(openSpendWithdraw) openSpendWithdraw.addEventListener('click', ()=>{ view.spendForm = view.spendForm==='withdraw' ? null : 'withdraw'; render(); });
+  const spendSubmit = document.getElementById('spendSubmit');
+  if(spendSubmit) spendSubmit.addEventListener('click', async ()=>{
+    const kind = spendSubmit.dataset.kind;
+    const amount = Math.round((parseFloat(document.getElementById('spendAmt').value)||0)*100)/100;
+    if(amount <= 0){ showToast('Enter an amount first.'); return; }
+    if(kind === 'withdraw' && amount > kid.cashBalance){ showToast("That's more than you have ready to use."); return; }
+    let note = '';
+    if(kind === 'purchase'){
+      const item = document.getElementById('spendItem').value.trim();
+      const link = document.getElementById('spendLink').value.trim();
+      if(!item){ showToast('Say what you want to buy first.'); return; }
+      note = item + (link ? ` (${link})` : '');
+    }
+    data.bankTx.push({ id: uid(), kidId: kid.id, type: kind, purpose:'spend', amount, note, status:'pending', ts: Date.now() });
+    await saveData();
+    view.spendForm = null;
+    showToast('Request sent to Mom & Dad!');
+    render();
+  });
+
+  const openGiveOnline = document.getElementById('openGiveOnline');
+  if(openGiveOnline) openGiveOnline.addEventListener('click', ()=>{ view.giveForm = view.giveForm==='donate' ? null : 'donate'; render(); });
+  const openGiveWithdraw = document.getElementById('openGiveWithdraw');
+  if(openGiveWithdraw) openGiveWithdraw.addEventListener('click', ()=>{ view.giveForm = view.giveForm==='withdraw' ? null : 'withdraw'; render(); });
+  const giveSubmit = document.getElementById('giveSubmit');
+  if(giveSubmit) giveSubmit.addEventListener('click', async ()=>{
+    const kind = giveSubmit.dataset.kind;
+    const amount = Math.round((parseFloat(document.getElementById('giveAmt').value)||0)*100)/100;
+    if(amount <= 0){ showToast('Enter an amount first.'); return; }
+    if(kind === 'withdraw' && amount > kid.cashBalance){ showToast("That's more than you have ready to use."); return; }
+    let note = '';
+    if(kind === 'donate'){
+      const item = document.getElementById('giveItem').value.trim();
+      const link = document.getElementById('giveLink').value.trim();
+      if(!item){ showToast('Say who or what you want to give to first.'); return; }
+      note = item + (link ? ` (${link})` : '');
+    }
+    data.bankTx.push({ id: uid(), kidId: kid.id, type: kind, purpose:'give', amount, note, status:'pending', ts: Date.now() });
+    await saveData();
+    view.giveForm = null;
+    showToast('Request sent to Mom & Dad!');
+    render();
+  });
+}
+
+function renderParent(app){
+  if(view.tab === 'pin' && !parentSession){
+    return renderPin(app);
+  }
+  const tab = view.tab || 'approvals';
+  let body = '';
+
+  if(tab === 'approvals'){
+    const pendC = data.completions.filter(c=>c.status==='pending').sort((a,b)=>a.ts-b.ts);
+    const pendR = data.redemptions.filter(r=>r.status==='pending').sort((a,b)=>a.ts-b.ts);
+    const pendS = data.skillLogs.filter(s=>s.status==='pending').sort((a,b)=>a.ts-b.ts);
+    body = `
+      <div class="card" style="margin-bottom:24px;">
+        <div class="section-label" style="margin-top:0">Give bonus points</div>
+        <p class="hint" style="margin:0 0 10px;">For anything you notice — being kind, staying consistent, or just going above and beyond.</p>
+        ${data.kids.length ? `
+          <div class="form-row">
+            <select id="bonusKid">${data.kids.map(k=>`<option value="${k.id}">${esc(k.name)}</option>`).join('')}</select>
+            <input type="number" id="bonusPoints" placeholder="Points" value="10" style="max-width:100px;">
+          </div>
+          <div class="form-row">
+            <select id="bonusCategory">
+              <option value="kindness">💛 Kindness</option>
+              <option value="consistency">🔁 Consistency</option>
+              <option value="other">⭐ Other</option>
+            </select>
+            <input type="text" id="bonusReason" placeholder="What for? (optional)">
+          </div>
+          <button class="btn go" id="giveBonusBtn">Give points</button>
+        ` : `<div class="empty">Add a kid first.</div>`}
+      </div>
+
+      <div class="section-label">Chores awaiting review</div>
+      ${pendC.length? `<div class="item-list">${pendC.map(c=>{
+        const kid = findKid(c.kidId);
+        return `<div class="item-card">
+          <div class="item-emoji">${findChore(c.choreId)?findChore(c.choreId).emoji:'✅'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(c.choreName)}</div>
+            <div class="item-sub">${kid?esc(kid.name):'?'} · +${c.points} pts</div>
+          </div>
+          <div class="item-action" style="display:flex;gap:6px;">
+            <button class="btn go" data-approve="${c.id}">Approve</button>
+            <button class="btn bad" data-reject="${c.id}">Reject</button>
+          </div>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">All caught up — no chores waiting.</div>`}
+
+      <div class="section-label">Skills awaiting review</div>
+      ${pendS.length? `<div class="item-list">${pendS.map(s=>{
+        const kid = findKid(s.kidId);
+        return `<div class="item-card">
+          <div class="item-emoji">${findSkill(s.skillId)?findSkill(s.skillId).emoji:'⭐'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(s.detail)}</div>
+            <div class="item-sub">${kid?esc(kid.name):'?'} · ${esc(s.skillName)} · +${s.points} pts</div>
+          </div>
+          <div class="item-action" style="display:flex;gap:6px;">
+            <button class="btn go" data-skillapprove="${s.id}">Approve</button>
+            <button class="btn bad" data-skillreject="${s.id}">Reject</button>
+          </div>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">Nothing waiting on the skills side.</div>`}
+
+      <div class="section-label">Rewards to deliver</div>
+      ${pendR.length? `<div class="item-list">${pendR.map(r=>{
+        const kid = findKid(r.kidId);
+        return `<div class="item-card">
+          <div class="item-emoji">${findReward(r.rewardId)?findReward(r.rewardId).emoji:'🎁'}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(r.rewardName)}</div>
+            <div class="item-sub">${kid?esc(kid.name):'?'} · ${r.cost} pts</div>
+          </div>
+          <div class="item-action" style="display:flex;gap:6px;">
+            <button class="btn go" data-fulfill="${r.id}">Delivered</button>
+            <button class="btn bad" data-cancel="${r.id}">Cancel &amp; refund</button>
+          </div>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">Nothing waiting to be handed over.</div>`}
+    `;
+  } else if(tab === 'kids'){
+    body = `<div class="section-label">Kids</div>
+      <div class="item-list">${data.kids.map(k=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${k.emoji}</span>
+          <input type="text" class="name-field" value="${esc(k.name)}" data-kidname="${k.id}">
+          <input type="number" value="${k.points}" data-kidpoints="${k.id}">
+          <button class="btn ghost" data-delkid="${k.id}">Remove</button>
+        </div>
+      `).join('') || '<div class="empty">No kids yet.</div>'}</div>
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Add a kid</div>
+        <div class="emoji-choices" id="kidEmojiChoices">${KID_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row">
+          <input type="text" id="newKidName" placeholder="Name">
+          <input type="color" id="newKidColor" value="#EF6F53" style="width:44px;padding:2px;flex:0;">
+        </div>
+        <button class="btn go" id="addKidBtn">Add kid</button>
+      </div>`;
+  } else if(tab === 'chores'){
+    body = `<div class="section-label">Chores</div>
+      <div class="item-list">${data.chores.map(c=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${c.emoji}</span>
+          <input type="text" class="name-field" value="${esc(c.name)}" data-choreName="${c.id}">
+          <input type="number" value="${c.points}" data-chorePoints="${c.id}" title="Points">
+          <select data-choreFrequency="${c.id}" style="width:auto;padding:7px 6px;border-radius:8px;border:1.5px solid var(--card-line);font-weight:700;">
+            <option value="daily" ${c.frequency!=='weekly'?'selected':''}>Daily</option>
+            <option value="weekly" ${c.frequency==='weekly'?'selected':''}>Weekly</option>
+          </select>
+          <button class="btn ghost" data-delchore="${c.id}">Remove</button>
+        </div>
+      `).join('') || '<div class="empty">No chores yet.</div>'}</div>
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Add a chore</div>
+        <div class="emoji-choices" id="choreEmojiChoices">${CHORE_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row">
+          <input type="text" id="newChoreName" placeholder="Chore name">
+          <input type="number" id="newChorePoints" placeholder="Points" value="10" style="max-width:90px;">
+          <select id="newChoreFrequency" style="max-width:110px;">
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+        <p class="hint" style="margin:-4px 0 4px;">Daily chores reset every day; weekly ones reset once a week and count toward the weekly streak.</p>
+        <button class="btn go" id="addChoreBtn">Add chore</button>
+      </div>`;
+  } else if(tab === 'skills'){
+    body = `<div class="section-label">Skill areas</div>
+      <p class="hint" style="margin-top:-6px;">Big-picture areas like Piano or Coding — kids describe the specific thing they achieved each time they log one.</p>
+      <div class="item-list">${data.skills.map(s=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${s.emoji}</span>
+          <input type="text" class="name-field" value="${esc(s.name)}" data-skillName="${s.id}">
+          <input type="number" value="${s.points}" data-skillPoints="${s.id}" title="Points per achievement">
+          <button class="btn ghost" data-delskill="${s.id}">Remove</button>
+        </div>
+      `).join('') || '<div class="empty">No skill areas yet.</div>'}</div>
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Add a skill area</div>
+        <div class="emoji-choices" id="skillEmojiChoices">${SKILL_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row">
+          <input type="text" id="newSkillName" placeholder="Skill area (e.g. Piano)">
+          <input type="number" id="newSkillPoints" placeholder="Points" value="10" style="max-width:100px;">
+        </div>
+        <button class="btn go" id="addSkillBtn">Add skill area</button>
+      </div>`;
+  } else if(tab === 'rewards'){
+    body = `<div class="section-label">Rewards</div>
+      <div class="item-list">${data.rewards.map(r=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${r.emoji}</span>
+          <input type="text" class="name-field" value="${esc(r.name)}" data-rewardName="${r.id}">
+          <input type="number" value="${r.cost}" data-rewardCost="${r.id}" title="Points cost">
+          <input type="number" step="0.01" value="${r.cash||0}" data-rewardCash="${r.id}" title="Cash paid out ($)">
+          <button class="btn ghost" data-delreward="${r.id}">Remove</button>
+        </div>
+      `).join('') || '<div class="empty">No rewards yet.</div>'}</div>
+      <p class="hint">Left number is the points cost, right number is cash paid to their bank (0 for a non-cash prize).</p>
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Add a reward</div>
+        <div class="emoji-choices" id="rewardEmojiChoices">${REWARD_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row">
+          <input type="text" id="newRewardName" placeholder="Reward name">
+          <input type="number" id="newRewardCost" placeholder="Points cost" value="50" style="max-width:120px;">
+        </div>
+        <div class="form-row">
+          <label style="display:flex;align-items:center;gap:6px;font-weight:700;font-size:13px;color:var(--ink-soft);">
+            <input type="checkbox" id="newRewardIsCash" style="width:16px;height:16px;flex:0;"> This reward pays cash to their bank
+          </label>
+          <input type="number" id="newRewardCashAmt" placeholder="Cash amount ($)" step="0.01" style="max-width:140px;">
+        </div>
+        <button class="btn go" id="addRewardBtn">Add reward</button>
+      </div>`;
+  } else if(tab === 'bank'){
+    const pendTx = data.bankTx.filter(t=>t.status==='pending').sort((a,b)=>a.ts-b.ts);
+    body = `
+      <div class="section-label">Requests</div>
+      ${pendTx.length ? `<div class="item-list">${pendTx.map(t=>{
+        const kid = findKid(t.kidId);
+        const meta = txTypeMeta(t.type);
+        return `<div class="item-card">
+          <div class="item-emoji">${meta.icon}</div>
+          <div class="item-body">
+            <div class="item-name">${kid?esc(kid.name):'?'} · ${meta.label} · ${fmtMoney(t.amount)}</div>
+            <div class="item-sub">${t.note ? esc(t.note) : 'No note'}${t.purpose && t.purpose!=='general' ? ' · '+t.purpose : ''}</div>
+          </div>
+          <div class="item-action" style="display:flex;gap:6px;">
+            <button class="btn go" data-bankapprove="${t.id}">Approve</button>
+            <button class="btn bad" data-bankreject="${t.id}">Reject</button>
+          </div>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">No pending bank requests.</div>`}
+
+      <div class="section-label">Balances</div>
+      <div class="item-list">${data.kids.map(k=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${k.emoji}</span>
+          <span class="name-field" style="font-weight:800;">${esc(k.name)}</span>
+          <input type="number" step="0.01" value="${k.cashBalance}" data-kidcash="${k.id}" style="width:90px;">
+        </div>
+      `).join('') || '<div class="empty">No kids yet.</div>'}</div>
+      <p class="hint">Edit a balance directly to log cash you've handed over or correct a mistake.</p>
+
+      <div class="section-label">Savings goals</div>
+      ${data.savingsGoals.length ? `<div class="item-list">${data.savingsGoals.map(g=>{
+        const kid = findKid(g.kidId);
+        return `<div class="item-card">
+          <div class="item-emoji">${g.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${kid?esc(kid.name):'?'} · ${esc(g.name)}</div>
+            <div class="item-sub">${fmtMoney(g.saved)} of ${fmtMoney(g.target)}</div>
+          </div>
+        </div>`;
+      }).join('')}</div>` : `<div class="empty">No savings goals started yet.</div>`}
+
+      <div class="section-label">Investing portfolios</div>
+      ${data.kids.map(k=>{
+        const holdings = data.holdings.filter(h=>h.kidId===k.id);
+        if(!holdings.length) return '';
+        const value = holdings.reduce((s,h)=>{ const a=findAsset(h.assetId); return s + (a?h.units*a.price:0); },0);
+        return `<div class="item-card">
+          <div class="item-emoji">${k.emoji}</div>
+          <div class="item-body">
+            <div class="item-name">${esc(k.name)}</div>
+            <div class="item-sub">${holdings.length} holding${holdings.length===1?'':'s'} · ${fmtMoney(value)} total</div>
+          </div>
+        </div>`;
+      }).join('') || `<div class="empty">No one's invested yet.</div>`}
+
+      <div class="section-label">Practice stocks</div>
+      <p class="hint" style="margin-top:-6px;">These prices are made up by you, not pulled from the real market — a safe way for kids to learn what investing feels like.</p>
+      <div class="item-list">${data.investAssets.map(a=>`
+        <div class="manage-row">
+          <span style="font-size:22px">${a.emoji}</span>
+          <input type="text" class="name-field" value="${esc(a.name)}" data-assetName="${a.id}">
+          <input type="number" step="0.01" value="${a.price}" data-assetPrice="${a.id}" title="Price per share">
+          <button class="btn ghost" data-delasset="${a.id}">Remove</button>
+        </div>
+      `).join('') || '<div class="empty">No practice stocks yet.</div>'}</div>
+      <div class="form-box">
+        <div class="section-label" style="margin-top:0">Add a practice stock</div>
+        <div class="emoji-choices" id="assetEmojiChoices">${ASSET_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row">
+          <input type="text" id="newAssetName" placeholder="Company or fund name">
+          <input type="number" id="newAssetPrice" placeholder="Price per share" step="0.01" value="10" style="max-width:130px;">
+        </div>
+        <div class="form-row"><input type="text" id="newAssetBlurb" placeholder="One line about what it does (optional)"></div>
+        <button class="btn go" id="addAssetBtn">Add stock</button>
+      </div>
+    `;
+  } else if(tab === 'settings'){
+    body = `<div class="section-label">Settings</div>
+      <div class="card">
+        <div class="item-name" style="margin-bottom:10px;">Change parent PIN</div>
+        <div class="form-row">
+          <input type="text" inputmode="numeric" maxlength="4" id="newPin" placeholder="New 4-digit PIN">
+        </div>
+        <button class="btn go" id="savePinBtn">Save PIN</button>
+        <p class="hint">Kids can't see this screen. Keep the PIN with the grown-ups.</p>
+      </div>`;
+  }
+
+  app.innerHTML = `
+    <button class="back-link" id="homeBtn">← All kids</button>
+    <div class="dash-header">
+      <div class="brand-mark" style="width:52px;height:52px;">🗂️</div>
+      <div>
+        <h2>Parent mode</h2>
+        <div class="point-total">Review, approve, manage</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab ${tab==='approvals'?'active':''}" data-ptab="approvals">Approvals</button>
+      <button class="tab ${tab==='kids'?'active':''}" data-ptab="kids">Kids</button>
+      <button class="tab ${tab==='chores'?'active':''}" data-ptab="chores">Chores</button>
+      <button class="tab ${tab==='skills'?'active':''}" data-ptab="skills">Skills</button>
+      <button class="tab ${tab==='rewards'?'active':''}" data-ptab="rewards">Rewards</button>
+      <button class="tab ${tab==='bank'?'active':''}" data-ptab="bank">Money</button>
+      <button class="tab ${tab==='settings'?'active':''}" data-ptab="settings">Settings</button>
+    </div>
+    ${body}
+  `;
+
+  document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
+  app.querySelectorAll('[data-ptab]').forEach(t=>t.addEventListener('click', ()=>{ view.tab = t.dataset.ptab; render(); }));
+
+  const giveBonusBtn = document.getElementById('giveBonusBtn');
+  if(giveBonusBtn) giveBonusBtn.addEventListener('click', async ()=>{
+    const kid = findKid(document.getElementById('bonusKid').value);
+    const points = Math.max(0, parseInt(document.getElementById('bonusPoints').value)||0);
+    const category = document.getElementById('bonusCategory').value;
+    const reason = document.getElementById('bonusReason').value.trim();
+    if(!kid || points <= 0){ showToast('Pick a kid and an amount first.'); return; }
+    kid.points += points;
+    data.bonusAwards.push({ id: uid(), kidId: kid.id, points, category, reason, ts: Date.now() });
+    await saveData();
+    showToast(`Gave ${kid.name} +${points} pts!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-approve]').forEach(b=>b.addEventListener('click', async ()=>{
+    const c = data.completions.find(x=>x.id===b.dataset.approve);
+    const kid = findKid(c.kidId);
+    if(kid){ kid.points += c.points; }
+    c.status = 'approved';
+    await saveData();
+    showToast('Approved — points added!');
+    render();
+  }));
+  app.querySelectorAll('[data-reject]').forEach(b=>b.addEventListener('click', async ()=>{
+    const c = data.completions.find(x=>x.id===b.dataset.reject);
+    c.status = 'rejected';
+    await saveData();
+    showToast('Marked as not done.');
+    render();
+  }));
+  app.querySelectorAll('[data-skillapprove]').forEach(b=>b.addEventListener('click', async ()=>{
+    const s = data.skillLogs.find(x=>x.id===b.dataset.skillapprove);
+    const kid = findKid(s.kidId);
+    if(kid){ kid.points += s.points; }
+    s.status = 'approved';
+    await saveData();
+    showToast('Approved — points added!');
+    render();
+  }));
+  app.querySelectorAll('[data-skillreject]').forEach(b=>b.addEventListener('click', async ()=>{
+    const s = data.skillLogs.find(x=>x.id===b.dataset.skillreject);
+    s.status = 'rejected';
+    await saveData();
+    showToast('Rejected.');
+    render();
+  }));
+  app.querySelectorAll('[data-fulfill]').forEach(b=>b.addEventListener('click', async ()=>{
+    const r = data.redemptions.find(x=>x.id===b.dataset.fulfill);
+    const reward = findReward(r.rewardId);
+    const kid = findKid(r.kidId);
+    r.status = 'fulfilled';
+    if(reward && reward.cash > 0 && kid){
+      kid.cashBalance += reward.cash;
+      data.bankTx.push({ id: uid(), kidId: kid.id, type:'deposit', amount: reward.cash, note: `Reward: ${reward.name}`, status:'approved', ts: Date.now() });
+      await saveData();
+      showToast(`Delivered — ${fmtMoney(reward.cash)} added to their bank!`);
+    } else {
+      await saveData();
+      showToast('Reward delivered!');
+    }
+    render();
+  }));
+  app.querySelectorAll('[data-cancel]').forEach(b=>b.addEventListener('click', async ()=>{
+    const r = data.redemptions.find(x=>x.id===b.dataset.cancel);
+    const kid = findKid(r.kidId);
+    if(kid){ kid.points += r.cost; }
+    r.status = 'cancelled';
+    await saveData();
+    showToast('Cancelled — points refunded.');
+    render();
+  }));
+
+  app.querySelectorAll('[data-bankapprove]').forEach(b=>b.addEventListener('click', async ()=>{
+    const t = data.bankTx.find(x=>x.id===b.dataset.bankapprove);
+    const kid = findKid(t.kidId);
+    const isOutgoing = t.type !== 'deposit';
+    if(isOutgoing && kid && t.amount > kid.cashBalance){
+      showToast("Balance is too low for this request — reject or adjust it instead.");
+      return;
+    }
+    if(kid){ kid.cashBalance += (t.type === 'deposit' ? t.amount : -t.amount); }
+    t.status = 'approved';
+    await saveData();
+    showToast(t.type==='deposit' ? 'Deposit approved!' : 'Approved!');
+    render();
+  }));
+  app.querySelectorAll('[data-bankreject]').forEach(b=>b.addEventListener('click', async ()=>{
+    const t = data.bankTx.find(x=>x.id===b.dataset.bankreject);
+    t.status = 'rejected';
+    await saveData();
+    showToast('Request rejected.');
+    render();
+  }));
+  app.querySelectorAll('[data-kidcash]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const k = findKid(inp.dataset.kidcash);
+    if(k){ k.cashBalance = Math.max(0, Math.round((parseFloat(inp.value)||0)*100)/100); await saveData(); showToast('Balance updated.'); }
+  }));
+
+  app.querySelectorAll('[data-assetName]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const a = findAsset(inp.dataset.assetname); if(a){ a.name = inp.value.trim() || a.name; await saveData(); }
+  }));
+  app.querySelectorAll('[data-assetPrice]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const a = findAsset(inp.dataset.assetprice); if(a){ a.price = Math.max(0.01, Math.round((parseFloat(inp.value)||0)*100)/100); await saveData(); showToast('Price updated.'); }
+  }));
+  app.querySelectorAll('[data-delasset]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('Remove this practice stock? Kids holding shares will keep their value based on the last price.')) return;
+    data.investAssets = data.investAssets.filter(a=>a.id!==b.dataset.delasset);
+    await saveData(); render();
+  }));
+  const assetEmojiChoices = document.getElementById('assetEmojiChoices');
+  let selAssetEmoji = ASSET_EMOJI[0];
+  if(assetEmojiChoices) assetEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    assetEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selAssetEmoji = btn.dataset.e;
+  }));
+  const addAssetBtn = document.getElementById('addAssetBtn');
+  if(addAssetBtn) addAssetBtn.addEventListener('click', async ()=>{
+    const name = document.getElementById('newAssetName').value.trim();
+    const price = Math.max(0.01, Math.round((parseFloat(document.getElementById('newAssetPrice').value)||0)*100)/100);
+    const blurb = document.getElementById('newAssetBlurb').value.trim();
+    if(!name){ showToast('Enter a stock name first.'); return; }
+    data.investAssets.push({ id: uid(), name, emoji: selAssetEmoji, price, blurb });
+    await saveData();
+    showToast(`"${name}" added!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-kidname]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const k = findKid(inp.dataset.kidname); if(k){ k.name = inp.value.trim() || k.name; await saveData(); }
+  }));
+  app.querySelectorAll('[data-kidpoints]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const k = findKid(inp.dataset.kidpoints); if(k){ k.points = Math.max(0, parseInt(inp.value)||0); await saveData(); showToast('Points updated.'); }
+  }));
+  app.querySelectorAll('[data-delkid]').forEach(b=>b.addEventListener('click', async ()=>{
+    if(!confirm('Remove this kid? Their history stays but they will no longer appear.')) return;
+    data.kids = data.kids.filter(k=>k.id!==b.dataset.delkid);
+    await saveData(); render();
+  }));
+  const kidEmojiChoices = document.getElementById('kidEmojiChoices');
+  let selKidEmoji = KID_EMOJI[0];
+  if(kidEmojiChoices) kidEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    kidEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selKidEmoji = btn.dataset.e;
+  }));
+  const addKidBtn = document.getElementById('addKidBtn');
+  if(addKidBtn) addKidBtn.addEventListener('click', async ()=>{
+    const nameEl = document.getElementById('newKidName');
+    const colorEl = document.getElementById('newKidColor');
+    const name = nameEl.value.trim();
+    if(!name){ showToast('Enter a name first.'); return; }
+    data.kids.push({ id: uid(), name, emoji: selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0 });
+    await saveData();
+    showToast(`${name} added!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-choreName]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const c = findChore(inp.dataset.chorename); if(c){ c.name = inp.value.trim() || c.name; await saveData(); }
+  }));
+  app.querySelectorAll('[data-chorePoints]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const c = findChore(inp.dataset.chorepoints); if(c){ c.points = Math.max(0, parseInt(inp.value)||0); await saveData(); }
+  }));
+  app.querySelectorAll('[data-choreFrequency]').forEach(sel=>sel.addEventListener('change', async ()=>{
+    const c = findChore(sel.dataset.chorefrequency); if(c){ c.frequency = sel.value === 'weekly' ? 'weekly' : 'daily'; await saveData(); showToast('Updated.'); }
+  }));
+  app.querySelectorAll('[data-delchore]').forEach(b=>b.addEventListener('click', async ()=>{
+    data.chores = data.chores.filter(c=>c.id!==b.dataset.delchore);
+    await saveData(); render();
+  }));
+  const choreEmojiChoices = document.getElementById('choreEmojiChoices');
+  let selChoreEmoji = CHORE_EMOJI[0];
+  if(choreEmojiChoices) choreEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    choreEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selChoreEmoji = btn.dataset.e;
+  }));
+  const addChoreBtn = document.getElementById('addChoreBtn');
+  if(addChoreBtn) addChoreBtn.addEventListener('click', async ()=>{
+    const nameEl = document.getElementById('newChoreName');
+    const ptsEl = document.getElementById('newChorePoints');
+    const freqEl = document.getElementById('newChoreFrequency');
+    const name = nameEl.value.trim();
+    if(!name){ showToast('Enter a chore name first.'); return; }
+    data.chores.push({ id: uid(), name, points: Math.max(0, parseInt(ptsEl.value)||0), emoji: selChoreEmoji, frequency: freqEl.value==='weekly'?'weekly':'daily' });
+    await saveData();
+    showToast(`"${name}" added!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-skillName]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const s = findSkill(inp.dataset.skillname); if(s){ s.name = inp.value.trim() || s.name; await saveData(); }
+  }));
+  app.querySelectorAll('[data-skillPoints]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const s = findSkill(inp.dataset.skillpoints); if(s){ s.points = Math.max(0, parseInt(inp.value)||0); await saveData(); }
+  }));
+  app.querySelectorAll('[data-delskill]').forEach(b=>b.addEventListener('click', async ()=>{
+    data.skills = data.skills.filter(s=>s.id!==b.dataset.delskill);
+    await saveData(); render();
+  }));
+  const skillEmojiChoices = document.getElementById('skillEmojiChoices');
+  let selSkillEmoji = SKILL_EMOJI[0];
+  if(skillEmojiChoices) skillEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    skillEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selSkillEmoji = btn.dataset.e;
+  }));
+  const addSkillBtn = document.getElementById('addSkillBtn');
+  if(addSkillBtn) addSkillBtn.addEventListener('click', async ()=>{
+    const name = document.getElementById('newSkillName').value.trim();
+    const points = Math.max(0, parseInt(document.getElementById('newSkillPoints').value)||0);
+    if(!name){ showToast('Enter a skill area first.'); return; }
+    data.skills.push({ id: uid(), name, emoji: selSkillEmoji, points });
+    await saveData();
+    showToast(`"${name}" added!`);
+    render();
+  });
+
+  app.querySelectorAll('[data-rewardName]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const r = findReward(inp.dataset.rewardname); if(r){ r.name = inp.value.trim() || r.name; await saveData(); }
+  }));
+  app.querySelectorAll('[data-rewardCost]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const r = findReward(inp.dataset.rewardcost); if(r){ r.cost = Math.max(0, parseInt(inp.value)||0); await saveData(); }
+  }));
+  app.querySelectorAll('[data-rewardCash]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const r = findReward(inp.dataset.rewardcash); if(r){ r.cash = Math.max(0, Math.round((parseFloat(inp.value)||0)*100)/100); await saveData(); }
+  }));
+  app.querySelectorAll('[data-delreward]').forEach(b=>b.addEventListener('click', async ()=>{
+    data.rewards = data.rewards.filter(r=>r.id!==b.dataset.delreward);
+    await saveData(); render();
+  }));
+  const rewardEmojiChoices = document.getElementById('rewardEmojiChoices');
+  let selRewardEmoji = REWARD_EMOJI[0];
+  if(rewardEmojiChoices) rewardEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    rewardEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel'); selRewardEmoji = btn.dataset.e;
+  }));
+  const addRewardBtn = document.getElementById('addRewardBtn');
+  if(addRewardBtn) addRewardBtn.addEventListener('click', async ()=>{
+    const nameEl = document.getElementById('newRewardName');
+    const costEl = document.getElementById('newRewardCost');
+    const isCashEl = document.getElementById('newRewardIsCash');
+    const cashAmtEl = document.getElementById('newRewardCashAmt');
+    const name = nameEl.value.trim();
+    if(!name){ showToast('Enter a reward name first.'); return; }
+    const cash = isCashEl.checked ? Math.max(0, Math.round((parseFloat(cashAmtEl.value)||0)*100)/100) : 0;
+    data.rewards.push({ id: uid(), name, cost: Math.max(0, parseInt(costEl.value)||0), emoji: isCashEl.checked ? '💵' : selRewardEmoji, cash });
+    await saveData();
+    showToast(`"${name}" added!`);
+    render();
+  });
+
+  const savePinBtn = document.getElementById('savePinBtn');
+  if(savePinBtn) savePinBtn.addEventListener('click', async ()=>{
+    const val = document.getElementById('newPin').value.trim();
+    if(!/^\d{4}$/.test(val)){ showToast('PIN must be 4 digits.'); return; }
+    data.pin = val;
+    await saveData();
+    showToast('PIN updated.');
+  });
+}
+
+function renderPin(app){
+  const dots = [0,1,2,3].map(i=>`<div class="pin-dot ${i<pinBuffer.length?'filled':''}"></div>`).join('');
+  app.innerHTML = `
+    <button class="back-link" id="homeBtn">← All kids</button>
+    <div class="pin-wrap">
+      <div class="brand-mark" style="margin:0 auto 10px;">🔒</div>
+      <div class="section-label" style="margin:0 0 4px;">Enter parent PIN</div>
+      <div class="pin-dots">${dots}</div>
+      <div class="pin-pad">
+        ${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="pin-key" data-n="${n}">${n}</button>`).join('')}
+        <button class="pin-key clear" id="pinClear">Clear</button>
+        <button class="pin-key" data-n="0">0</button>
+        <div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
+  document.getElementById('pinClear').addEventListener('click', ()=>{ pinBuffer=''; render(); });
+  app.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click', ()=>{
+    if(pinBuffer.length>=4) return;
+    pinBuffer += b.dataset.n;
+    if(pinBuffer.length===4){
+      if(pinBuffer === data.pin){
+        parentSession = true;
+        pinBuffer='';
+        view = { screen:'parent', tab:'approvals' };
+        render();
+      } else {
+        showToast('Wrong PIN, try again.');
+        setTimeout(()=>{ pinBuffer=''; render(); }, 500);
+      }
+    } else {
+      render();
+    }
+  }));
+}
+
+(async function init(){
+  await loadData();
+  view = { screen: 'home' };
+  render();
+})();
+</script>
+</body>
+</html>
