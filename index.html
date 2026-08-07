@@ -204,15 +204,53 @@ body{
   .kid-grid{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));}
 }
 </style>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 </head>
 <body>
 <div id="app"></div>
 <div class="toast" id="toast"></div>
 
 <script>
+/* ===== CLOUD SYNC SETUP =====
+   To sync across your iPad and phone, create a free Firebase project
+   (console.firebase.google.com), enable Firestore, and paste your
+   project's config values below. Until you do, the app keeps working
+   fine on a single device using local storage. */
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBXqvx5EGPpwjyU6CDfNusAT68q-0qwf2I",
+  authDomain: "chore-champions-85cd9.firebaseapp.com",
+  projectId: "chore-champions-85cd9",
+  storageBucket: "chore-champions-85cd9.firebasestorage.app",
+  messagingSenderId: "1014728208825",
+  appId: "1:1014728208825:web:f9a7305cbe8ed19972c668"
+};
+const FIRESTORE_COLLECTION = 'chorechampions';
+
+let db = null;
+if(FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== 'YOUR_API_KEY' && window.firebase){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db = firebase.firestore();
+  }catch(e){
+    console.error('Firebase init failed', e);
+    db = null;
+  }
+}
+
 const STORAGE_KEY = 'chorecamp-data-v1';
 
-const storageAPI = (window.storage) ? window.storage : {
+const storageAPI = db ? {
+  async get(key){
+    const doc = await db.collection(FIRESTORE_COLLECTION).doc(key).get();
+    if(!doc.exists) throw new Error('not found');
+    return { key, value: doc.data().value, shared: true };
+  },
+  async set(key, value){
+    await db.collection(FIRESTORE_COLLECTION).doc(key).set({ value, updatedAt: Date.now() });
+    return { key, value, shared: true };
+  }
+} : (window.storage) ? window.storage : {
   async get(key){
     const raw = localStorage.getItem(key);
     if(raw === null) throw new Error('not found');
@@ -1753,6 +1791,19 @@ function renderPin(app){
   await loadData();
   view = { screen: 'home' };
   render();
+
+  if(db){
+    db.collection(FIRESTORE_COLLECTION).doc(STORAGE_KEY).onSnapshot(doc => {
+      if(!doc.exists) return;
+      if(doc.metadata.hasPendingWrites) return;
+      try{
+        data = JSON.parse(doc.data().value);
+        render();
+      }catch(e){
+        console.error('Failed to apply synced data', e);
+      }
+    });
+  }
 })();
 </script>
 </body>
