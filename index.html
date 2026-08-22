@@ -8,21 +8,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root{
-  --bg:#0F332D;
-  --bg-deep:#0A2622;
-  --card:#FFFBF1;
-  --card-line:#E6D9B6;
-  --card-shadow:#0A2622;
-  --ink:#20302B;
-  --ink-soft:#5D6D63;
-  --gold:#F2B134;
-  --gold-deep:#B9800E;
-  --coral:#EF6F53;
-  --coral-deep:#B23E27;
-  --green:#4C9A6A;
-  --green-deep:#2E6B47;
-  --red:#D65A4A;
-  --red-deep:#93301F;
+  --bg:#FFF8ED;
+  --bg-deep:#FFEAD1;
+  --card:#FFFFFF;
+  --card-line:#FFE1EC;
+  --card-shadow:#E9C9D6;
+  --ink:#3A2E35;
+  --ink-soft:#8A7A85;
+  --pink:#FF6FA5;
+  --pink-deep:#C94A80;
+  --gold:#FFCB3D;
+  --gold-deep:#D99A00;
+  --coral:#FF8A65;
+  --coral-deep:#D65A3A;
+  --green:#6BCB4F;
+  --green-deep:#3F9E2C;
+  --red:#FF5A5A;
+  --red-deep:#C23A3A;
+  --blue:#3DC6F0;
+  --blue-deep:#1B8FB0;
 }
 
 *{box-sizing:border-box;}
@@ -31,8 +35,8 @@ body{
   margin:0;
   font-family:'Nunito',sans-serif;
   background:
-    radial-gradient(circle at 20% 15%, rgba(255,255,255,0.03) 0, transparent 45%),
-    radial-gradient(circle at 85% 80%, rgba(255,255,255,0.04) 0, transparent 40%),
+    radial-gradient(circle at 15% 10%, rgba(255,111,165,0.07) 0, transparent 40%),
+    radial-gradient(circle at 90% 85%, rgba(61,198,240,0.08) 0, transparent 40%),
     var(--bg);
   color:var(--ink);
   min-height:100vh;
@@ -42,21 +46,21 @@ body{
 
 .title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
 .brand{display:flex;align-items:center;gap:12px;}
-.brand-mark{width:46px;height:46px;border-radius:50%;background:var(--gold);border:2.5px dashed var(--bg-deep);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.brand h1{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;color:var(--gold);margin:0;letter-spacing:.3px;}
-.brand p{margin:0;font-size:12px;color:#BFE0D3;letter-spacing:.6px;text-transform:uppercase;font-weight:700;}
+.brand-mark{width:46px;height:46px;border-radius:50%;background:var(--gold);border:2.5px dashed #fff;box-shadow:0 3px 0 rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.brand h1{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;color:var(--pink-deep);margin:0;letter-spacing:.3px;}
+.brand p{margin:0;font-size:12px;color:var(--ink-soft);letter-spacing:.6px;text-transform:uppercase;font-weight:700;}
 
 .pill-btn{
   font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;
-  background:transparent;color:#CFE9DE;border:2px solid #2E5C51;
+  background:var(--card);color:var(--ink-soft);border:2px solid var(--card-line);
   border-radius:999px;padding:9px 16px;cursor:pointer;
   display:inline-flex;align-items:center;gap:6px;
   transition:transform .12s ease, background .12s ease;
 }
-.pill-btn:hover{background:#164039;transform:translateY(-1px);}
+.pill-btn:hover{background:#FFF0F5;transform:translateY(-1px);}
 .pill-btn:active{transform:translateY(0);}
-.pill-btn.solid{background:var(--gold);color:#3B2900;border-color:var(--gold);}
-.pill-btn.solid:hover{background:#FFC65A;}
+.pill-btn.solid{background:var(--gold);color:#4A3300;border-color:var(--gold);}
+.pill-btn.solid:hover{background:#FFD666;}
 
 .card{
   background:var(--card);
@@ -66,7 +70,7 @@ body{
   padding:18px;
 }
 
-.section-label{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:#BFE0D3;margin:26px 0 12px;}
+.section-label{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:13px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink-soft);margin:26px 0 12px;}
 
 .kid-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;}
 .kid-tile{
@@ -88,17 +92,17 @@ body{
 .dash-header{display:flex;align-items:center;gap:14px;margin-bottom:6px;}
 .dash-header .badge{width:58px;height:58px;margin:0;}
 .dash-header .badge .face{font-size:24px;}
-.dash-header h2{font-family:'Baloo 2',sans-serif;font-size:22px;color:var(--gold);margin:0;}
-.point-total{font-family:'Space Mono',monospace;color:#BFE0D3;font-size:13px;font-weight:700;}
-.point-total b{color:var(--gold);font-size:16px;}
+.dash-header h2{font-family:'Baloo 2',sans-serif;font-size:22px;color:var(--pink-deep);margin:0;}
+.point-total{font-family:'Space Mono',monospace;color:var(--ink-soft);font-size:13px;font-weight:700;}
+.point-total b{color:var(--gold-deep);font-size:16px;}
 
 .tabs{display:flex;gap:8px;margin:18px 0 16px;flex-wrap:wrap;}
 .tab{
   font-family:'Baloo 2',sans-serif;font-weight:700;font-size:14px;
-  background:transparent;border:2px solid #2E5C51;color:#CFE9DE;
+  background:var(--card);border:2px solid var(--card-line);color:var(--ink-soft);
   border-radius:12px;padding:8px 14px;cursor:pointer;
 }
-.tab.active{background:var(--gold);border-color:var(--gold);color:#3B2900;}
+.tab.active{background:var(--gold);border-color:var(--gold);color:#4A3300;}
 
 .item-list{display:flex;flex-direction:column;gap:10px;}
 .item-card{
@@ -135,7 +139,7 @@ body{
 .status-chip.cancelled{background:#EFEAE0;color:var(--ink-soft);}
 
 .empty{
-  text-align:center;padding:34px 16px;color:#8FBBA9;font-weight:700;
+  text-align:center;padding:34px 16px;color:var(--ink-soft);font-weight:700;
   font-family:'Baloo 2',sans-serif;font-size:15px;
 }
 
@@ -155,13 +159,13 @@ body{
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
 .pin-key{
   font-family:'Space Mono',monospace;font-weight:700;font-size:20px;
-  background:#164039;color:#EAF6F0;border:2px solid #2E5C51;border-radius:12px;
-  padding:16px 0;cursor:pointer;
+  background:var(--card);color:var(--ink);border:2px solid var(--card-line);border-radius:12px;
+  padding:16px 0;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.1);
 }
-.pin-key:active{background:#1E5148;}
+.pin-key:active{background:var(--pink);color:#fff;box-shadow:none;transform:translateY(3px);}
 .pin-key.clear{font-size:13px;font-family:'Baloo 2',sans-serif;}
 
-.form-box{background:#F3ECD9;border:1px dashed var(--card-line);border-radius:14px;padding:14px;margin-top:12px;}
+.form-box{background:#FFF3F8;border:1px dashed var(--card-line);border-radius:14px;padding:14px;margin-top:12px;}
 .form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
 .form-row input, .form-row select{
   font-family:'Nunito',sans-serif;font-weight:700;font-size:14px;
@@ -182,9 +186,9 @@ body{
 }
 .manage-row input.name-field{flex:1;width:auto;}
 
-.back-link{background:none;border:none;color:#BFE0D3;font-family:'Baloo 2',sans-serif;font-weight:700;
+.back-link{background:none;border:none;color:var(--pink-deep);font-family:'Baloo 2',sans-serif;font-weight:700;
   cursor:pointer;font-size:14px;padding:0;margin-bottom:14px;display:inline-flex;align-items:center;gap:5px;}
-.back-link:hover{color:var(--gold);}
+.back-link:hover{color:var(--pink);}
 
 .hint{font-size:12px;color:var(--ink-soft);margin:6px 0 0;}
 
@@ -198,6 +202,52 @@ body{
 .week-day-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--ink-soft);text-transform:uppercase;}
 .week-day-num{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:15px;color:var(--ink);margin:2px 0;}
 .week-day-icon{font-size:14px;}
+
+.flip-card{perspective:1200px;margin-bottom:12px;}
+.flip-card-inner{position:relative;width:100%;min-height:220px;transition:transform .5s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d;}
+.flip-card.flipped .flip-card-inner{transform:rotateY(180deg);min-height:600px;}
+.flip-card-front,.flip-card-back{position:absolute;inset:0;width:100%;backface-visibility:hidden;border-radius:16px;}
+.flip-card-back{transform:rotateY(180deg);overflow-y:auto;}
+.flip-card:not(.flipped) .flip-card-back{visibility:hidden;}
+.flip-card.flipped .flip-card-front{visibility:hidden;}
+
+.poke-front{
+  background:linear-gradient(160deg,#FFFFFF,#FFE9F2);
+  border:3px solid var(--gold);border-radius:16px;padding:16px;cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.14);
+}
+.poke-type-badge{
+  display:inline-block;font-family:'Baloo 2',sans-serif;font-weight:800;font-size:11px;
+  color:#fff;border-radius:999px;padding:3px 10px;letter-spacing:.3px;
+}
+.poke-front-emoji{font-size:44px;text-align:center;margin:6px 0;}
+.poke-front-name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:17px;text-align:center;color:var(--ink);}
+.poke-front-price{font-family:'Space Mono',monospace;font-weight:700;text-align:center;font-size:14px;color:var(--ink-soft);margin-top:2px;}
+.poke-tap-hint{text-align:center;font-size:11px;color:var(--ink-soft);margin-top:8px;font-weight:700;}
+
+.poke-back{
+  background:linear-gradient(160deg,#FFFFFF,#E8F7FC);
+  border:3px solid var(--gold);border-radius:16px;padding:14px;cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.14);height:100%;box-sizing:border-box;
+}
+.poke-back-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.poke-back-header .emoji{font-size:26px;}
+.poke-back-header .name{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:15px;color:var(--ink);flex:1;}
+.stat-row{margin-bottom:8px;}
+.stat-row-label{display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px;}
+.stat-bar-track{background:#E5D9B8;border-radius:999px;height:9px;overflow:hidden;}
+.stat-bar-fill{height:100%;border-radius:999px;}
+.origin-story{background:#fff;border:1px dashed var(--card-line);border-radius:10px;padding:8px 10px;font-size:12px;color:var(--ink);font-style:italic;margin:8px 0;}
+.money-report{background:#fff;border-radius:10px;padding:10px;margin-top:8px;}
+.money-row{margin-bottom:7px;}
+.money-row-label{display:flex;justify-content:space-between;font-size:11px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.money-row-track{background:#EFE7CF;border-radius:6px;height:14px;overflow:hidden;}
+.money-row-fill{height:100%;border-radius:6px;}
+.poke-close{text-align:center;font-size:11px;color:var(--ink-soft);font-weight:800;margin-top:10px;}
+
+input[type=range]{-webkit-appearance:none;appearance:none;height:8px;border-radius:999px;background:#E5D9B8;outline:none;margin:4px 0 2px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--gold);border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25);cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--gold);border:3px solid #fff;box-shadow:0 2px 4px rgba(0,0,0,.25);cursor:pointer;}
 
 @media (max-width:520px){
   .brand h1{font-size:21px;}
@@ -272,16 +322,20 @@ const CHORE_EMOJI = ['🛏️','🐾','🗑️','🍽️','🧹','📚','🧺','
 const REWARD_EMOJI = ['📱','🎬','🍦','🌙','💵','🎮','🍕','🎨','🏊','🎟️'];
 const GOAL_EMOJI = ['🎯','🚲','🎮','🧩','🎧','⚽','🛹','📷','🐶','🎁'];
 const ASSET_EMOJI = ['🧸','🌱','🚀','🎮','🍔','🎬','⚡','🏠','🐾','📦'];
+const SECTORS = ['Toys','Food','Tech','Sports','Energy','Other'];
+const SECTOR_COLOR = { Toys:'#FF6FA5', Food:'#FFCB3D', Tech:'#3DC6F0', Sports:'#6BCB4F', Energy:'#FF8A65', Other:'#B39CA8' };
 const SKILL_EMOJI = ['🎹','💻','⚽','🎨','📖','🎤','🏊','🥋','🧗','♟️'];
 
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
 function defaultData(){
+  const asset1 = uid(), asset2 = uid(), asset3 = uid();
+  const now = Date.now();
   return {
     pin: '0000',
     kids: [
-      { id: uid(), name: 'Emma', emoji: '🦊', color: '#EF6F53', points: 40, cashBalance: 0 },
-      { id: uid(), name: 'Jack', emoji: '🐻', color: '#4C9A6A', points: 25, cashBalance: 0 }
+      { id: uid(), name: 'Emma', emoji: '🦊', color: '#EF6F53', points: 40, cashBalance: 0, lastInterestTs: now },
+      { id: uid(), name: 'Jack', emoji: '🐻', color: '#4C9A6A', points: 25, cashBalance: 0, lastInterestTs: now }
     ],
     chores: [
       { id: uid(), name: 'Make your bed', points: 5, emoji: '🛏️', frequency: 'daily' },
@@ -303,9 +357,19 @@ function defaultData(){
     bankTx: [],
     savingsGoals: [],
     investAssets: [
-      { id: uid(), name: 'Big Toy Co.', emoji: '🧸', price: 10, blurb: 'Makes toys and games kids love.' },
-      { id: uid(), name: 'Green Energy Fund', emoji: '🌱', price: 6, blurb: 'Companies building clean power.' },
-      { id: uid(), name: 'Space Explorers Inc.', emoji: '🚀', price: 15, blurb: 'Builds rockets and satellites.' }
+      { id: asset1, name: 'Big Toy Co.', emoji: '🧸', price: 10, blurb: 'Makes toys and games kids love.', sector: 'Toys', originStory: 'Started in a garage by two friends who thought toys should be more fun and less boring.' },
+      { id: asset2, name: 'Green Energy Fund', emoji: '🌱', price: 6, blurb: 'Companies building clean power.', sector: 'Energy', originStory: 'A group of scientists teamed up to build power that doesn\'t hurt the planet.' },
+      { id: asset3, name: 'Space Explorers Inc.', emoji: '🚀', price: 15, blurb: 'Builds rockets and satellites.', sector: 'Tech', originStory: 'Founded by a rocket-obsessed engineer who wanted to make space travel normal.' }
+    ],
+    priceEvents: [
+      { id: uid(), assetId: asset1, price: 10, headline: 'Big Toy Co. started trading!', ts: now },
+      { id: uid(), assetId: asset2, price: 6, headline: 'Green Energy Fund started trading!', ts: now },
+      { id: uid(), assetId: asset3, price: 15, headline: 'Space Explorers Inc. started trading!', ts: now }
+    ],
+    financials: [
+      { id: uid(), assetId: asset1, quarter: 'Q1', revenue: 50000, cogs: 20000, opex: 15000, ts: now },
+      { id: uid(), assetId: asset2, quarter: 'Q1', revenue: 80000, cogs: 50000, opex: 20000, ts: now },
+      { id: uid(), assetId: asset3, quarter: 'Q1', revenue: 120000, cogs: 90000, opex: 20000, ts: now }
     ],
     holdings: [],
     skills: [
@@ -315,7 +379,9 @@ function defaultData(){
       { id: uid(), name: 'Reading', emoji: '📖', points: 5 }
     ],
     skillLogs: [],
-    bonusAwards: []
+    bonusAwards: [],
+    interestRate: 5,
+    interestLog: []
   };
 }
 
@@ -330,11 +396,18 @@ async function loadData(){
   if(!Array.isArray(data.bankTx)) data.bankTx = [];
   if(!Array.isArray(data.savingsGoals)) data.savingsGoals = [];
   if(!Array.isArray(data.investAssets)) data.investAssets = [];
+  if(!Array.isArray(data.priceEvents)) data.priceEvents = [];
+  if(!Array.isArray(data.financials)) data.financials = [];
+  data.investAssets.forEach(a => { if(!a.sector) a.sector = 'Other'; if(typeof a.originStory !== 'string') a.originStory = ''; });
   if(!Array.isArray(data.holdings)) data.holdings = [];
+  data.holdings.forEach(h => { if(!h.firstBuyTs) h.firstBuyTs = 0; });
   if(!Array.isArray(data.skills)) data.skills = [];
   if(!Array.isArray(data.skillLogs)) data.skillLogs = [];
   if(!Array.isArray(data.bonusAwards)) data.bonusAwards = [];
+  if(typeof data.interestRate !== 'number') data.interestRate = 5;
+  if(!Array.isArray(data.interestLog)) data.interestLog = [];
   data.kids.forEach(k => { if(typeof k.cashBalance !== 'number') k.cashBalance = 0; });
+  data.kids.forEach(k => { if(!k.lastInterestTs) k.lastInterestTs = Date.now(); });
   data.chores.forEach(c => { if(c.frequency !== 'weekly' && c.frequency !== 'daily') c.frequency = 'daily'; });
   data.rewards.forEach(r => { if(typeof r.cash !== 'number') r.cash = 0; });
   data.bankTx.forEach(t => { if(!t.purpose) t.purpose = 'general'; });
@@ -347,6 +420,36 @@ async function saveData(){
   }catch(e){
     showToast("Couldn't save — check connection");
   }
+}
+
+const WEEK_MS = 7*24*60*60*1000;
+
+const MIN_INTEREST_BALANCE = 20;
+
+async function accrueInterest(){
+  let changed = false;
+  const now = Date.now();
+  data.kids.forEach(kid=>{
+    if(!kid.lastInterestTs){ kid.lastInterestTs = now; return; }
+    let weeksElapsed = Math.floor((now - kid.lastInterestTs) / WEEK_MS);
+    if(weeksElapsed <= 0) return;
+    weeksElapsed = Math.min(weeksElapsed, 520);
+    const goalsSaved = data.savingsGoals.filter(g=>g.kidId===kid.id).reduce((s,g)=>s+g.saved, 0);
+    const weeklyRate = (data.interestRate/100) / 52;
+    for(let i=0;i<weeksElapsed;i++){
+      const base = kid.cashBalance + goalsSaved;
+      if(base >= MIN_INTEREST_BALANCE){
+        const interest = Math.round(base * weeklyRate * 100) / 100;
+        if(interest > 0){
+          kid.cashBalance = Math.round((kid.cashBalance + interest) * 100) / 100;
+          data.interestLog.push({ id: uid(), kidId: kid.id, amount: interest, ts: kid.lastInterestTs + WEEK_MS*(i+1) });
+          changed = true;
+        }
+      }
+    }
+    kid.lastInterestTs = kid.lastInterestTs + WEEK_MS*weeksElapsed;
+  });
+  if(changed) await saveData();
 }
 
 function showToast(msg){
@@ -365,6 +468,94 @@ function findKid(id){ return data.kids.find(k=>k.id===id); }
 function findChore(id){ return data.chores.find(c=>c.id===id); }
 function findReward(id){ return data.rewards.find(r=>r.id===id); }
 function findAsset(id){ return data.investAssets.find(a=>a.id===id); }
+
+function assetEvents(assetId){
+  return data.priceEvents.filter(e=>e.assetId===assetId).sort((a,b)=>b.ts-a.ts);
+}
+
+function ownershipTimeline(assetId, firstBuyTs){
+  const allAsc = assetEvents(assetId).slice().reverse();
+  if(!firstBuyTs) return allAsc;
+  let startIdx = 0;
+  for(let i=0;i<allAsc.length;i++){
+    if(allAsc[i].ts <= firstBuyTs) startIdx = i;
+  }
+  return allAsc.slice(startIdx);
+}
+
+function assetTrend(assetId){
+  const events = assetEvents(assetId);
+  if(events.length < 2) return null;
+  const diff = events[0].price - events[1].price;
+  if(diff > 0) return 'up';
+  if(diff < 0) return 'down';
+  return 'flat';
+}
+
+function recentMarketEvents(days){
+  const cutoff = Date.now() - days*86400000;
+  return data.priceEvents.filter(e=>e.ts >= cutoff && e.headline).sort((a,b)=>b.ts-a.ts);
+}
+
+function kidSectorBreakdown(kidId){
+  const holdings = data.holdings.filter(h=>h.kidId===kidId);
+  const bySector = {};
+  let total = 0;
+  holdings.forEach(h=>{
+    const a = findAsset(h.assetId);
+    if(!a) return;
+    const value = h.units * a.price;
+    bySector[a.sector] = (bySector[a.sector]||0) + value;
+    total += value;
+  });
+  return { bySector, total, sectorCount: Object.keys(bySector).length };
+}
+
+function growthScore(assetId){
+  const events = assetEvents(assetId);
+  if(events.length < 2) return null;
+  const oldest = events[events.length-1].price;
+  const latest = events[0].price;
+  if(oldest <= 0) return null;
+  return ((latest - oldest) / oldest) * 100;
+}
+
+function stabilityScore(assetId){
+  const events = assetEvents(assetId).map(e=>e.price);
+  if(events.length < 3) return null;
+  const changes = [];
+  for(let i=0;i<events.length-1;i++){
+    changes.push(Math.abs((events[i]-events[i+1])/events[i+1]));
+  }
+  const avgChange = changes.reduce((a,b)=>a+b,0)/changes.length;
+  return Math.max(0, Math.min(100, 100 - avgChange*200));
+}
+
+function popularityInfo(assetId){
+  const totalKids = data.kids.length;
+  const holders = new Set(data.holdings.filter(h=>h.assetId===assetId && h.units>0.0001).map(h=>h.kidId));
+  return { count: holders.size, total: totalKids, pct: totalKids>0 ? Math.round((holders.size/totalKids)*100) : 0 };
+}
+
+function currentQuarterLabel(){
+  const d = new Date();
+  return `Q${Math.floor(d.getMonth()/3)+1} ${d.getFullYear()}`;
+}
+
+function latestFinancials(assetId){
+  const list = data.financials.filter(f=>f.assetId===assetId).sort((a,b)=>b.ts-a.ts);
+  return list.length ? list[0] : null;
+}
+
+function financialsDerived(f){
+  if(!f) return null;
+  const grossProfit = f.revenue - f.cogs;
+  const grossMarginPct = f.revenue>0 ? (grossProfit/f.revenue*100) : 0;
+  const operatingProfit = grossProfit - f.opex;
+  const operatingMarginPct = f.revenue>0 ? (operatingProfit/f.revenue*100) : 0;
+  return { ...f, grossProfit, grossMarginPct, operatingProfit, operatingMarginPct };
+}
+
 function findGoal(id){ return data.savingsGoals.find(g=>g.id===id); }
 function findHolding(id){ return data.holdings.find(h=>h.id===id); }
 function findSkill(id){ return data.skills.find(s=>s.id===id); }
@@ -372,6 +563,8 @@ function findSkill(id){ return data.skills.find(s=>s.id===id); }
 function bonusMeta(category){
   if(category==='kindness') return { icon:'💛', label:'Kindness' };
   if(category==='consistency') return { icon:'🔁', label:'Consistency' };
+  if(category==='rule') return { icon:'🚫', label:'Rule broken' };
+  if(category==='correction') return { icon:'✏️', label:'Correction' };
   return { icon:'⭐', label:'Bonus' };
 }
 
@@ -535,9 +728,32 @@ function fmtMoney(n){
   return '$' + (Math.round((n||0)*100)/100).toFixed(2);
 }
 
+function monthsLabel(m){
+  if(m===0) return 'Right now';
+  if(m<12) return m+' month'+(m===1?'':'s');
+  const yrs = Math.floor(m/12), rem = m%12;
+  return yrs+' yr'+(yrs===1?'':'s')+(rem ? ' '+rem+' mo' : '');
+}
+
+function projectGrowth(amount, weeks, ratePct){
+  let bal = amount;
+  const weeklyRate = (ratePct/100)/52;
+  for(let i=0;i<weeks;i++){
+    if(bal >= MIN_INTEREST_BALANCE){
+      const interest = Math.round(bal*weeklyRate*100)/100;
+      bal = Math.round((bal+interest)*100)/100;
+    }
+  }
+  return bal;
+}
+
 function renderSaveSection(kid){
   const goals = data.savingsGoals.filter(g=>g.kidId===kid.id);
   const gf = view.goalForm || {};
+  const calcAmount = view.calcAmount !== undefined ? view.calcAmount : 50;
+  const calcMonths = view.calcMonths !== undefined ? view.calcMonths : 12;
+  const calcWeeks = Math.round(calcMonths*4.33);
+  const calcResult = projectGrowth(calcAmount, calcWeeks, data.interestRate);
   const goalsHtml = goals.length ? goals.map(g=>{
     const pct = g.target>0 ? Math.min(100, Math.round((g.saved/g.target)*100)) : 0;
     const done = g.target>0 && g.saved >= g.target;
@@ -573,6 +789,22 @@ function renderSaveSection(kid){
   }).join('') : `<div class="empty">No savings goals yet — start one below!</div>`;
 
   return `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="section-label" style="margin-top:0">💡 Growth calculator</div>
+      <p class="hint">Drag the sliders to see how saving adds up at ${data.interestRate}%/year.</p>
+      <div class="stat-row">
+        <div class="stat-row-label"><span>Starting amount</span><span id="calcAmountLabel">${fmtMoney(calcAmount)}</span></div>
+        <input type="range" id="calcAmountSlider" min="0" max="500" step="5" value="${calcAmount}" style="width:100%;">
+      </div>
+      <div class="stat-row">
+        <div class="stat-row-label"><span>Time</span><span id="calcMonthsLabel">${monthsLabel(calcMonths)}</span></div>
+        <input type="range" id="calcMonthsSlider" min="0" max="60" step="1" value="${calcMonths}" style="width:100%;">
+      </div>
+      <div style="text-align:center;margin-top:12px;">
+        <div class="hint">You'd have</div>
+        <div id="calcResult" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:26px;color:var(--green-deep);">${fmtMoney(calcResult)}</div>
+      </div>
+    </div>
     <div class="item-list" style="margin-bottom:16px;">${goalsHtml}</div>
     <div class="form-box">
       <div class="section-label" style="margin-top:0">Start a new goal</div>
@@ -586,12 +818,122 @@ function renderSaveSection(kid){
   `;
 }
 
+function trendArrow(trend){
+  if(trend==='up') return '<span style="color:var(--green-deep);">▲</span>';
+  if(trend==='down') return '<span style="color:var(--red-deep);">▼</span>';
+  if(trend==='flat') return '<span style="color:var(--ink-soft);">–</span>';
+  return '<span style="color:var(--ink-soft);">New</span>';
+}
+
+function pctOf(part, whole){
+  if(!whole || whole <= 0) return 0;
+  return Math.max(0, Math.min(100, Math.round((part/whole)*100)));
+}
+
+function assetBackHTML(asset, holding){
+  const color = SECTOR_COLOR[asset.sector] || SECTOR_COLOR.Other;
+  const growth = growthScore(asset.id);
+  const stability = stabilityScore(asset.id);
+  const pop = popularityInfo(asset.id);
+  const f = financialsDerived(latestFinancials(asset.id));
+  const growthFillPct = growth===null ? 8 : Math.max(4, Math.min(100, 50 + growth));
+  const events = assetEvents(asset.id).slice(0,3);
+  const eventsAsc = holding ? ownershipTimeline(asset.id, holding.firstBuyTs) : assetEvents(asset.id).slice().reverse();
+
+  return `
+    <div class="poke-back">
+      <div class="poke-back-header">
+        <div class="emoji">${asset.emoji}</div>
+        <div class="name">${esc(asset.name)}</div>
+      </div>
+      <span class="poke-type-badge" style="background:${color};">${asset.sector}</span>
+      ${asset.originStory ? `<div class="origin-story">"${esc(asset.originStory)}"</div>` : ''}
+
+      <div class="stat-row" style="margin-top:10px;">
+        <div class="stat-row-label"><span>Growth</span><span>${growth===null?'New':(growth>=0?'+':'')+Math.round(growth)+'%'}</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${growthFillPct}%;background:${growth===null?'#C9BE9E':(growth>=0?'var(--green)':'var(--red)')};"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-row-label"><span>Popularity</span><span>${pop.count} of ${pop.total} kids</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${pop.pct}%;background:var(--coral);"></div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-row-label"><span>Stability</span><span>${stability===null?'New':Math.round(stability)+'%'}</span></div>
+        <div class="stat-bar-track"><div class="stat-bar-fill" style="width:${stability===null?8:stability}%;background:var(--gold);"></div></div>
+      </div>
+
+      ${holding && eventsAsc.length ? `
+      <div class="money-report">
+        <div class="section-label" style="margin:0 0 4px;">📈 Your investment over time</div>
+        <p class="hint" style="margin-bottom:6px;">Drag to see what your shares would've been worth at each update.</p>
+        <input type="range" id="timeline-${holding.id}" data-timelineholding="${holding.id}" data-timelineasset="${asset.id}"
+          min="0" max="${eventsAsc.length-1}" step="1" value="${eventsAsc.length-1}" style="width:100%;">
+        <div id="timelineDate-${holding.id}" class="hint" style="text-align:center;margin:4px 0;font-weight:700;">
+          ${new Date(eventsAsc[eventsAsc.length-1].ts).toLocaleDateString()}${eventsAsc[eventsAsc.length-1].headline ? ' · '+esc(eventsAsc[eventsAsc.length-1].headline) : ''}
+        </div>
+        <div style="text-align:center;">
+          <div class="hint">Started with ${fmtMoney(holding.totalCost)}</div>
+          <div id="timelineValue-${holding.id}" style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;color:var(--green-deep);">
+            ${fmtMoney(holding.units * eventsAsc[eventsAsc.length-1].price)}
+          </div>
+          <div id="timelineGain-${holding.id}" class="hint">
+            ${(() => { const g = holding.units*eventsAsc[eventsAsc.length-1].price - holding.totalCost; return (g>=0?'Up ':'Down ')+fmtMoney(Math.abs(g)); })()}
+          </div>
+        </div>
+      </div>` : ''}
+
+      ${f ? `
+      <div class="money-report">
+        <div class="section-label" style="margin:0 0 8px;">💰 Money Report · ${esc(f.quarter||'')}</div>
+        <div class="money-row">
+          <div class="money-row-label"><span>Money Earned</span><span>${fmtMoney(f.revenue)}</span></div>
+          <div class="money-row-track"><div class="money-row-fill" style="width:100%;background:var(--green);"></div></div>
+        </div>
+        <div class="money-row">
+          <div class="money-row-label"><span>− Cost to Make It</span><span>${fmtMoney(f.cogs)}</span></div>
+          <div class="money-row-track"><div class="money-row-fill" style="width:${pctOf(f.cogs,f.revenue)}%;background:var(--coral);"></div></div>
+        </div>
+        <div class="money-row">
+          <div class="money-row-label"><span>= Left After Making It</span><span>${fmtMoney(f.grossProfit)} (${Math.round(f.grossMarginPct)}%)</span></div>
+          <div class="money-row-track"><div class="money-row-fill" style="width:${pctOf(f.grossProfit,f.revenue)}%;background:var(--gold);"></div></div>
+        </div>
+        <div class="money-row">
+          <div class="money-row-label"><span>− Cost to Run It</span><span>${fmtMoney(f.opex)}</span></div>
+          <div class="money-row-track"><div class="money-row-fill" style="width:${pctOf(f.opex,f.revenue)}%;background:var(--red);"></div></div>
+        </div>
+        <div class="money-row">
+          <div class="money-row-label" style="font-weight:800;"><span>= Real Profit</span><span>${fmtMoney(f.operatingProfit)} (${Math.round(f.operatingMarginPct)}%)</span></div>
+          <div class="money-row-track"><div class="money-row-fill" style="width:${pctOf(f.operatingProfit,f.revenue)}%;background:var(--green-deep);"></div></div>
+        </div>
+      </div>` : `<p class="hint" style="margin-top:10px;">No money report yet — ask Mom or Dad to add one!</p>`}
+
+      ${events.length ? `
+        <div class="section-label" style="margin-top:10px;">📰 Recent news</div>
+        ${events.map(e=>`<div class="hint" style="margin:3px 0;">${esc(e.headline || ('Price updated to '+fmtMoney(e.price)))}</div>`).join('')}
+      ` : ''}
+      <div class="poke-close">↩ Tap to flip back</div>
+    </div>
+  `;
+}
+
+function assetCardWrap(asset, frontHTML, holding){
+  return `
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front">${frontHTML}</div>
+        <div class="flip-card-back">${assetBackHTML(asset, holding)}</div>
+      </div>
+    </div>
+  `;
+}
+
 function renderInvestSection(kid){
   const holdings = data.holdings.filter(h=>h.kidId===kid.id);
   const totalValue = holdings.reduce((s,h)=>{ const a=findAsset(h.assetId); return s + (a ? h.units*a.price : 0); }, 0);
   const totalCost = holdings.reduce((s,h)=>s+h.totalCost, 0);
   const gain = totalValue - totalCost;
   const invf = view.investForm || {};
+  const { bySector, sectorCount } = kidSectorBreakdown(kid.id);
 
   const holdingsHtml = holdings.map(h=>{
     const a = findAsset(h.assetId);
@@ -599,52 +941,77 @@ function renderInvestSection(kid){
     const value = h.units*a.price;
     const g = value - h.totalCost;
     const open = invf.mode==='sell' && invf.holdingId===h.id;
-    return `
-    <div class="item-card" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="item-emoji">${a.emoji}</div>
-        <div class="item-body">
-          <div class="item-name">${esc(a.name)}</div>
-          <div class="item-sub">${h.units.toFixed(2)} shares · ${fmtMoney(value)} · ${g>=0?'+':''}${fmtMoney(g)}</div>
-        </div>
-        <button class="btn warn" data-sellopen="${h.id}">Sell</button>
+    const color = SECTOR_COLOR[a.sector] || SECTOR_COLOR.Other;
+    const frontHTML = `
+      <div class="poke-front">
+        <span class="poke-type-badge" style="background:${color};">${a.sector}</span>
+        <div class="poke-front-emoji">${a.emoji}</div>
+        <div class="poke-front-name">${esc(a.name)} ${trendArrow(assetTrend(a.id))}</div>
+        <div class="poke-front-price">${h.units.toFixed(2)} shares · ${fmtMoney(value)} · ${g>=0?'+':''}${fmtMoney(g)}</div>
+        <div style="text-align:center;margin-top:10px;"><button class="btn warn" data-sellopen="${h.id}">Sell</button></div>
+        <div class="poke-tap-hint">👆 Tap card to see stats</div>
       </div>
-      ${open ? `
+    `;
+    return assetCardWrap(a, frontHTML, h) + (open ? `
         <div class="form-box">
           <div class="form-row"><input type="number" id="investAmt" step="0.01" min="0.01" max="${value.toFixed(2)}" placeholder="Amount to sell ($)"></div>
           <button class="btn warn" id="sellSubmit" data-holding="${h.id}">Sell</button>
-        </div>` : ''}
-    </div>`;
+        </div>` : '');
   }).join('');
 
   const assetsHtml = data.investAssets.map(a=>{
     const open = invf.mode==='buy' && invf.assetId===a.id;
-    return `
-    <div class="item-card" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div class="item-emoji">${a.emoji}</div>
-        <div class="item-body">
-          <div class="item-name">${esc(a.name)}</div>
-          <div class="item-sub">${fmtMoney(a.price)} / share${a.blurb ? ' · '+esc(a.blurb) : ''}</div>
-        </div>
-        <button class="btn go" data-buyopen="${a.id}">Invest</button>
+    const color = SECTOR_COLOR[a.sector] || SECTOR_COLOR.Other;
+    const frontHTML = `
+      <div class="poke-front">
+        <span class="poke-type-badge" style="background:${color};">${a.sector}</span>
+        <div class="poke-front-emoji">${a.emoji}</div>
+        <div class="poke-front-name">${esc(a.name)} ${trendArrow(assetTrend(a.id))}</div>
+        <div class="poke-front-price">${fmtMoney(a.price)} / share</div>
+        <div style="text-align:center;margin-top:10px;"><button class="btn go" data-buyopen="${a.id}">Invest</button></div>
+        <div class="poke-tap-hint">👆 Tap card to see stats</div>
       </div>
-      ${open ? `
+    `;
+    return assetCardWrap(a, frontHTML) + (open ? `
         <div class="form-box">
           <div class="form-row"><input type="number" id="investAmt" step="0.01" min="0.01" max="${kid.cashBalance}" placeholder="Amount to invest ($)"></div>
           <p class="hint">You have ${fmtMoney(kid.cashBalance)} ready to use.</p>
           <button class="btn go" id="buySubmit" data-asset="${a.id}">Buy shares</button>
-        </div>` : ''}
-    </div>`;
+        </div>` : '');
+  }).join('');
+
+  const recap = recentMarketEvents(7).slice(0,5);
+  const diversifierEarned = sectorCount >= 3;
+  const sectorBarHtml = Object.keys(bySector).length ? Object.entries(bySector).map(([sector,val])=>{
+    const pct = totalValue>0 ? Math.round((val/totalValue)*100) : 0;
+    const color = SECTOR_COLOR[sector] || SECTOR_COLOR.Other;
+    return `<div style="background:${color};width:${pct}%;height:100%;display:inline-block;" title="${sector} ${pct}%"></div>`;
+  }).join('') : '';
+  const sectorLegend = Object.keys(bySector).map(sector=>{
+    const color = SECTOR_COLOR[sector] || SECTOR_COLOR.Other;
+    return `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:12px;color:var(--ink-soft);"><span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block;"></span>${sector}</span>`;
   }).join('');
 
   return `
     <p class="hint" style="margin-bottom:14px;">This is a pretend practice portfolio for learning — Mom and Dad set these prices by hand, it isn't the real stock market.</p>
+    ${recap.length ? `
+      <div class="card" style="margin-bottom:14px;">
+        <div class="section-label" style="margin-top:0">📅 This week in the market</div>
+        ${recap.map(e=>{
+          const a = findAsset(e.assetId);
+          return `<div class="hint" style="margin:4px 0;">${a?a.emoji:'📈'} ${esc(e.headline)}</div>`;
+        }).join('')}
+      </div>
+    ` : ''}
     ${holdings.length ? `
       <div class="card" style="margin-bottom:14px;">
         <div class="section-label" style="margin-top:0">Your portfolio</div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;color:var(--green-deep);">${fmtMoney(totalValue)}</div>
         <div class="hint" style="margin-top:2px;">${gain>=0?'Up ':'Down '}${fmtMoney(Math.abs(gain))} since you invested</div>
+        <div class="section-label" style="margin-top:14px;">Spread across sectors</div>
+        <div style="height:14px;border-radius:999px;overflow:hidden;background:#EFE7CF;">${sectorBarHtml}</div>
+        <div style="margin-top:8px;">${sectorLegend}</div>
+        <p class="hint" style="margin-top:8px;">${diversifierEarned ? '🏅 Diversifier badge earned — invested in '+sectorCount+' different sectors!' : `Invested in ${sectorCount} of ${SECTORS.length} sectors. Reach 3 to earn the Diversifier badge!`}</p>
       </div>
       <div class="item-list" style="margin-bottom:20px;">${holdingsHtml}</div>
     ` : ''}
@@ -737,7 +1104,7 @@ function renderGiveSection(kid){
 
 const DAY_LABELS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-function renderWeeklySection(kid){
+function renderStreakHeader(kid){
   const streak = currentStreak(kid.id);
   const best = bestStreak(kid.id);
   const dChores = dailyChoresList();
@@ -764,33 +1131,14 @@ function renderWeeklySection(kid){
     </div>`;
   }).join('');
 
-  const weeklyChores = data.chores.filter(c=>c.frequency==='weekly');
-  const weeklyDone = new Set(
-    data.completions.filter(c=>c.kidId===kid.id && c.status!=='rejected' && isSameWeek(c.ts)).map(c=>c.choreId)
-  );
-
   return `
     <div class="card" style="text-align:center;margin-bottom:16px;">
       <div class="section-label" style="margin-top:0">Current streak</div>
       <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--gold-deep);">${streak>0?'🔥 ':''}${streak} day${streak===1?'':'s'}</div>
       <p class="hint">Best streak so far: ${best} day${best===1?'':'s'}</p>
+      <div class="week-grid" style="margin-top:10px;">${days}</div>
+      ${dChores.length===0 ? `<p class="hint">Add daily chores in Parent mode to start tracking a streak.</p>` : `<p class="hint">A full day means every daily chore was done that day.</p>`}
     </div>
-    <div class="section-label">This week</div>
-    <div class="week-grid">${days}</div>
-    ${dChores.length===0 ? `<p class="hint" style="margin-bottom:20px;">Add daily chores in Parent mode to start tracking a streak.</p>` : `<p class="hint" style="margin-bottom:20px;">A full day means every daily chore was done that day.</p>`}
-    ${weeklyChores.length ? `
-      <div class="section-label">This week's weekly chores</div>
-      <div class="item-list">${weeklyChores.map(c=>`
-        <div class="item-card">
-          <div class="item-emoji">${c.emoji}</div>
-          <div class="item-body">
-            <div class="item-name">${esc(c.name)}</div>
-            <div class="item-sub">+${c.points} pts</div>
-          </div>
-          <span class="status-chip ${weeklyDone.has(c.id)?'approved':'pending'}">${weeklyDone.has(c.id)?'done this week':'not yet'}</span>
-        </div>
-      `).join('')}</div>
-    ` : ''}
   `;
 }
 
@@ -817,12 +1165,13 @@ function renderKid(app){
   let body = '';
   if(tab === 'chores'){
     const availableChores = data.chores.filter(c => !doneNowIds.has(c.id));
+    const streakHeader = renderStreakHeader(kid);
     if(data.chores.length === 0){
-      body = `<div class="empty">No chores set up yet.</div>`;
+      body = streakHeader + `<div class="empty">No chores set up yet.</div>`;
     } else if(availableChores.length === 0){
-      body = `<div class="empty">All done for now, nice work! 🎉</div>`;
+      body = streakHeader + `<div class="empty">All done for now, nice work! 🎉</div>`;
     } else {
-      body = `<div class="item-list">${availableChores.map(c=>`
+      body = streakHeader + `<div class="item-list">${availableChores.map(c=>`
         <div class="item-card">
           <div class="item-emoji">${c.emoji}</div>
           <div class="item-body">
@@ -833,8 +1182,6 @@ function renderKid(app){
         </div>
       `).join('')}</div>`;
     }
-  } else if(tab === 'weekly'){
-    body = renderWeeklySection(kid);
   } else if(tab === 'skills'){
     const pendingSkill = mySkillLogs.filter(s=>s.status==='pending');
     const openSkillId = view.skillForm;
@@ -890,11 +1237,17 @@ function renderKid(app){
     else if(section === 'spend') sectionBody = renderSpendSection(kid);
     else if(section === 'give') sectionBody = renderGiveSection(kid);
 
+    const myInterest = data.interestLog.filter(i=>i.kidId===kid.id).sort((a,b)=>b.ts-a.ts);
+    const lastInterest = myInterest[0];
+    const totalInterestEarned = myInterest.reduce((s,i)=>s+i.amount, 0);
+
     body = `
       <div class="card" style="text-align:center;margin-bottom:16px;">
         <div class="section-label" style="margin-top:0">Ready to use</div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--green-deep);">${fmtMoney(kid.cashBalance)}</div>
         <p class="hint">Mom and Dad hold onto this for you, just like a real bank.</p>
+        <p class="hint">🌱 Growing at ${data.interestRate}%/year once you have $${MIN_INTEREST_BALANCE}+ saved, paid every week${lastInterest ? ` · last payment +${fmtMoney(lastInterest.amount)}` : ''}</p>
+        ${totalInterestEarned > 0 ? `<p class="hint">Earned ${fmtMoney(totalInterestEarned)} in interest so far</p>` : ''}
         <button class="btn go" id="openDeposit">Deposit cash</button>
         ${view.depositForm ? `
           <div class="form-box" style="text-align:left;">
@@ -963,15 +1316,27 @@ function renderKid(app){
           </div>
           <span class="status-chip ${s.status}">${completionLabel(s.status)}</span>
         </div>`})),
-      ...myBonusAwards.map(b=>({ ts:b.ts, node:(()=>{ const meta = bonusMeta(b.category); return `
+      ...myBonusAwards.map(b=>({ ts:b.ts, node:(()=>{
+        const meta = bonusMeta(b.category);
+        const isTake = b.direction === 'take';
+        return `
         <div class="item-card">
           <div class="item-emoji">${meta.icon}</div>
           <div class="item-body">
-            <div class="item-name">${meta.label} bonus${b.reason ? ' · '+esc(b.reason) : ''}</div>
-            <div class="item-sub">+${b.points} pts · ${new Date(b.ts).toLocaleDateString()}</div>
+            <div class="item-name">${meta.label}${b.reason ? ' · '+esc(b.reason) : ''}</div>
+            <div class="item-sub">${isTake?'-':'+'}${b.points} pts · ${new Date(b.ts).toLocaleDateString()}</div>
           </div>
-          <span class="status-chip approved">awarded</span>
-        </div>`; })()}))
+          <span class="status-chip ${isTake?'rejected':'approved'}">${isTake?'taken':'awarded'}</span>
+        </div>`; })()})),
+      ...data.interestLog.filter(i=>i.kidId===kid.id).map(i=>({ ts:i.ts, node:`
+        <div class="item-card">
+          <div class="item-emoji">🌱</div>
+          <div class="item-body">
+            <div class="item-name">Bank interest</div>
+            <div class="item-sub">+${fmtMoney(i.amount)} · ${new Date(i.ts).toLocaleDateString()}</div>
+          </div>
+          <span class="status-chip approved">paid</span>
+        </div>`}))
     ].sort((a,b)=>b.ts-a.ts);
     body = rows.length ? `<div class="item-list">${rows.map(x=>x.node).join('')}</div>` : `<div class="empty">Nothing here yet — go earn some points!</div>`;
   }
@@ -987,7 +1352,6 @@ function renderKid(app){
     </div>
     <div class="tabs">
       <button class="tab ${tab==='chores'?'active':''}" data-tab="chores">Chores</button>
-      <button class="tab ${tab==='weekly'?'active':''}" data-tab="weekly">Weekly</button>
       <button class="tab ${tab==='skills'?'active':''}" data-tab="skills">Skills</button>
       <button class="tab ${tab==='rewards'?'active':''}" data-tab="rewards">Rewards</button>
       <button class="tab ${tab==='money'?'active':''}" data-tab="money">Money</button>
@@ -997,7 +1361,7 @@ function renderKid(app){
   `;
 
   document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
-  app.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+  app.querySelectorAll('[data-tab]').forEach(t=>t.addEventListener('click', ()=>{
     view.tab = t.dataset.tab; render();
   }));
   app.querySelectorAll('[data-chore]').forEach(b=>b.addEventListener('click', async ()=>{
@@ -1089,6 +1453,24 @@ function renderKid(app){
     data.savingsGoals = data.savingsGoals.filter(g=>g.id!==goal.id);
     await saveData(); render();
   }));
+
+  const calcAmountSlider = document.getElementById('calcAmountSlider');
+  const calcMonthsSlider = document.getElementById('calcMonthsSlider');
+  function updateCalc(){
+    if(!calcAmountSlider || !calcMonthsSlider) return;
+    const amount = parseFloat(calcAmountSlider.value);
+    const months = parseInt(calcMonthsSlider.value);
+    view.calcAmount = amount;
+    view.calcMonths = months;
+    const weeks = Math.round(months*4.33);
+    const result = projectGrowth(amount, weeks, data.interestRate);
+    document.getElementById('calcAmountLabel').textContent = fmtMoney(amount);
+    document.getElementById('calcMonthsLabel').textContent = monthsLabel(months);
+    document.getElementById('calcResult').textContent = fmtMoney(result);
+  }
+  if(calcAmountSlider) calcAmountSlider.addEventListener('input', updateCalc);
+  if(calcMonthsSlider) calcMonthsSlider.addEventListener('input', updateCalc);
+
   const goalEmojiChoices = document.getElementById('goalEmojiChoices');
   let selGoalEmoji = GOAL_EMOJI[0];
   if(goalEmojiChoices) goalEmojiChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
@@ -1106,6 +1488,36 @@ function renderKid(app){
     showToast(`"${name}" goal started!`);
     render();
   });
+
+  app.querySelectorAll('.poke-front').forEach(el=>el.addEventListener('click', (e)=>{
+    if(e.target.closest('button')) return;
+    const card = el.closest('.flip-card');
+    if(card) card.classList.add('flipped');
+  }));
+  app.querySelectorAll('.poke-back').forEach(el=>el.addEventListener('click', (e)=>{
+    if(e.target.closest('input[type=range]')) return;
+    const card = el.closest('.flip-card');
+    if(card) card.classList.remove('flipped');
+  }));
+
+  app.querySelectorAll('[data-timelineholding]').forEach(slider=>slider.addEventListener('input', ()=>{
+    const holdingId = slider.dataset.timelineholding;
+    const assetId = slider.dataset.timelineasset;
+    const holding = findHolding(holdingId);
+    if(!holding) return;
+    const eventsAsc = ownershipTimeline(assetId, holding.firstBuyTs);
+    const idx = Math.max(0, Math.min(eventsAsc.length-1, parseInt(slider.value)));
+    const point = eventsAsc[idx];
+    if(!point) return;
+    const value = holding.units * point.price;
+    const gain = value - holding.totalCost;
+    const dateEl = document.getElementById('timelineDate-'+holdingId);
+    const valueEl = document.getElementById('timelineValue-'+holdingId);
+    const gainEl = document.getElementById('timelineGain-'+holdingId);
+    if(dateEl) dateEl.textContent = new Date(point.ts).toLocaleDateString() + (point.headline ? ' · '+point.headline : '');
+    if(valueEl) valueEl.textContent = fmtMoney(value);
+    if(gainEl) gainEl.textContent = (gain>=0?'Up ':'Down ') + fmtMoney(Math.abs(gain));
+  }));
 
   app.querySelectorAll('[data-buyopen]').forEach(b=>b.addEventListener('click', ()=>{
     const assetId = b.dataset.buyopen;
@@ -1128,7 +1540,7 @@ function renderKid(app){
     const units = amount / asset.price;
     let holding = data.holdings.find(h=>h.kidId===kid.id && h.assetId===asset.id);
     if(holding){ holding.units += units; holding.totalCost += amount; }
-    else { data.holdings.push({ id: uid(), kidId: kid.id, assetId: asset.id, units, totalCost: amount }); }
+    else { data.holdings.push({ id: uid(), kidId: kid.id, assetId: asset.id, units, totalCost: amount, firstBuyTs: Date.now() }); }
     kid.cashBalance -= amount;
     await saveData();
     view.investForm = null;
@@ -1215,24 +1627,35 @@ function renderParent(app){
     const pendC = data.completions.filter(c=>c.status==='pending').sort((a,b)=>a.ts-b.ts);
     const pendR = data.redemptions.filter(r=>r.status==='pending').sort((a,b)=>a.ts-b.ts);
     const pendS = data.skillLogs.filter(s=>s.status==='pending').sort((a,b)=>a.ts-b.ts);
+    const bonusDir = view.bonusDirection || 'add';
     body = `
       <div class="card" style="margin-bottom:24px;">
-        <div class="section-label" style="margin-top:0">Give bonus points</div>
-        <p class="hint" style="margin:0 0 10px;">For anything you notice — being kind, staying consistent, or just going above and beyond.</p>
+        <div class="section-label" style="margin-top:0">Give or take away points</div>
+        <p class="hint" style="margin:0 0 10px;">For anything you notice — being kind, staying consistent, going above and beyond, or correcting a mistake.</p>
         ${data.kids.length ? `
+          <div class="form-row">
+            <button type="button" class="btn ${bonusDir==='add'?'go':'ghost'}" data-bonusdir="add" style="flex:1;">➕ Add points</button>
+            <button type="button" class="btn ${bonusDir==='take'?'bad':'ghost'}" data-bonusdir="take" style="flex:1;">➖ Take away</button>
+          </div>
           <div class="form-row">
             <select id="bonusKid">${data.kids.map(k=>`<option value="${k.id}">${esc(k.name)}</option>`).join('')}</select>
             <input type="number" id="bonusPoints" placeholder="Points" value="10" style="max-width:100px;">
           </div>
           <div class="form-row">
             <select id="bonusCategory">
-              <option value="kindness">💛 Kindness</option>
-              <option value="consistency">🔁 Consistency</option>
-              <option value="other">⭐ Other</option>
+              ${bonusDir==='take' ? `
+                <option value="rule">🚫 Broke a rule</option>
+                <option value="correction">✏️ Correction</option>
+                <option value="other">⭐ Other</option>
+              ` : `
+                <option value="kindness">💛 Kindness</option>
+                <option value="consistency">🔁 Consistency</option>
+                <option value="other">⭐ Other</option>
+              `}
             </select>
             <input type="text" id="bonusReason" placeholder="What for? (optional)">
           </div>
-          <button class="btn go" id="giveBonusBtn">Give points</button>
+          <button class="btn ${bonusDir==='take'?'bad':'go'}" id="giveBonusBtn">${bonusDir==='take'?'Take away points':'Give points'}</button>
         ` : `<div class="empty">Add a kid first.</div>`}
       </div>
 
@@ -1425,25 +1848,77 @@ function renderParent(app){
         const holdings = data.holdings.filter(h=>h.kidId===k.id);
         if(!holdings.length) return '';
         const value = holdings.reduce((s,h)=>{ const a=findAsset(h.assetId); return s + (a?h.units*a.price:0); },0);
+        const { sectorCount } = kidSectorBreakdown(k.id);
         return `<div class="item-card">
           <div class="item-emoji">${k.emoji}</div>
           <div class="item-body">
             <div class="item-name">${esc(k.name)}</div>
-            <div class="item-sub">${holdings.length} holding${holdings.length===1?'':'s'} · ${fmtMoney(value)} total</div>
+            <div class="item-sub">${holdings.length} holding${holdings.length===1?'':'s'} · ${fmtMoney(value)} total · ${sectorCount} sector${sectorCount===1?'':'s'}${sectorCount>=3?' 🏅':''}</div>
           </div>
         </div>`;
       }).join('') || `<div class="empty">No one's invested yet.</div>`}
 
       <div class="section-label">Practice stocks</div>
-      <p class="hint" style="margin-top:-6px;">These prices are made up by you, not pulled from the real market — a safe way for kids to learn what investing feels like.</p>
-      <div class="item-list">${data.investAssets.map(a=>`
-        <div class="manage-row">
-          <span style="font-size:22px">${a.emoji}</span>
-          <input type="text" class="name-field" value="${esc(a.name)}" data-assetName="${a.id}">
-          <input type="number" step="0.01" value="${a.price}" data-assetPrice="${a.id}" title="Price per share">
-          <button class="btn ghost" data-delasset="${a.id}">Remove</button>
-        </div>
-      `).join('') || '<div class="empty">No practice stocks yet.</div>'}</div>
+      <p class="hint" style="margin-top:-6px;">These prices are made up by you, not pulled from the real market — a safe way for kids to learn what investing feels like. Post an update with a short reason so kids see cause-and-effect, not random moves.</p>
+      <div class="item-list">${data.investAssets.map(a=>{
+        const open = view.assetUpdateForm === a.id;
+        const finOpen = view.assetFinForm === a.id;
+        const history = data.financials.filter(f=>f.assetId===a.id).sort((x,y)=>y.ts-x.ts);
+        return `
+        <div class="item-card" style="flex-direction:column;align-items:stretch;">
+          <div class="manage-row" style="border:none;box-shadow:none;padding:0;">
+            <span style="font-size:22px">${a.emoji}</span>
+            <input type="text" class="name-field" value="${esc(a.name)}" data-assetName="${a.id}">
+            <select data-assetSector="${a.id}" style="width:auto;padding:7px 6px;border-radius:8px;border:1.5px solid var(--card-line);font-weight:700;">
+              ${SECTORS.map(s=>`<option value="${s}" ${a.sector===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+            <button class="btn ghost" data-delasset="${a.id}">Remove</button>
+          </div>
+          <div class="form-row" style="margin-top:8px;">
+            <input type="text" value="${esc(a.originStory||'')}" data-assetOrigin="${a.id}" placeholder="Origin story (e.g. Started in a garage by two friends...)">
+          </div>
+          <div class="hint" style="margin:6px 0;">Currently ${fmtMoney(a.price)} / share</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn go" data-postupdate="${a.id}">Post a price update</button>
+            <button class="btn go" data-finopen="${a.id}" style="background:var(--coral);">Add quarterly report</button>
+          </div>
+          ${open ? `
+            <div class="form-box">
+              <div class="form-row">
+                <input type="number" id="assetNewPrice" step="0.01" value="${a.price}" placeholder="New price">
+              </div>
+              <div class="form-row"><input type="text" id="assetHeadline" placeholder="What happened? (e.g. Launched a hit new toy)"></div>
+              <button class="btn go" id="assetUpdateSubmit" data-asset="${a.id}">Post update</button>
+            </div>` : ''}
+          ${finOpen ? `
+            <div class="form-box">
+              <div class="section-label" style="margin-top:0">Quarterly report — ${esc(a.name)}</div>
+              <div class="form-row">
+                <input type="text" id="finQuarter" value="${currentQuarterLabel()}" placeholder="Quarter (e.g. Q3 2026)" style="max-width:140px;">
+              </div>
+              <div class="form-row">
+                <input type="number" id="finRevenue" placeholder="Revenue (money earned)" step="1" min="0">
+              </div>
+              <div class="form-row">
+                <input type="number" id="finCogs" placeholder="Cost to make it (COGS)" step="1" min="0">
+              </div>
+              <div class="form-row">
+                <input type="number" id="finOpex" placeholder="Cost to run it (OpEx)" step="1" min="0">
+              </div>
+              <button class="btn go" id="finSubmit" data-asset="${a.id}">Save quarterly report</button>
+            </div>
+          ` : ''}
+          ${history.length ? `
+            <div class="hint" style="margin-top:8px;font-weight:800;">Past reports:</div>
+            ${history.slice(0,4).map(f=>`
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-soft);margin:2px 0;">
+                <span>${esc(f.quarter)} · ${fmtMoney(f.revenue)} revenue</span>
+                <button class="btn ghost" data-delfin="${f.id}" style="padding:3px 8px;font-size:11px;">Remove</button>
+              </div>
+            `).join('')}
+          ` : ''}
+        </div>`;
+      }).join('') || '<div class="empty">No practice stocks yet.</div>'}</div>
       <div class="form-box">
         <div class="section-label" style="margin-top:0">Add a practice stock</div>
         <div class="emoji-choices" id="assetEmojiChoices">${ASSET_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
@@ -1451,12 +1926,24 @@ function renderParent(app){
           <input type="text" id="newAssetName" placeholder="Company or fund name">
           <input type="number" id="newAssetPrice" placeholder="Price per share" step="0.01" value="10" style="max-width:130px;">
         </div>
+        <div class="form-row">
+          <select id="newAssetSector">${SECTORS.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>
+        </div>
         <div class="form-row"><input type="text" id="newAssetBlurb" placeholder="One line about what it does (optional)"></div>
+        <div class="form-row"><input type="text" id="newAssetOrigin" placeholder="Origin story (optional)"></div>
         <button class="btn go" id="addAssetBtn">Add stock</button>
       </div>
     `;
   } else if(tab === 'settings'){
     body = `<div class="section-label">Settings</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="item-name" style="margin-bottom:10px;">Bank interest rate</div>
+        <div class="form-row">
+          <input type="number" step="0.1" min="0" id="interestRateInput" value="${data.interestRate}" style="max-width:100px;"> <span style="align-self:center;font-weight:700;">% per year</span>
+        </div>
+        <button class="btn go" id="saveInterestBtn">Save rate</button>
+        <p class="hint">Paid automatically every week on their ready-to-use balance plus anything saved toward goals — only once that total is $${MIN_INTEREST_BALANCE} or more. Applied whenever the app is opened, catching up on any missed weeks.</p>
+      </div>
       <div class="card">
         <div class="item-name" style="margin-bottom:10px;">Change parent PIN</div>
         <div class="form-row">
@@ -1491,17 +1978,27 @@ function renderParent(app){
   document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
   app.querySelectorAll('[data-ptab]').forEach(t=>t.addEventListener('click', ()=>{ view.tab = t.dataset.ptab; render(); }));
 
+  app.querySelectorAll('[data-bonusdir]').forEach(b=>b.addEventListener('click', ()=>{
+    view.bonusDirection = b.dataset.bonusdir;
+    render();
+  }));
+
   const giveBonusBtn = document.getElementById('giveBonusBtn');
   if(giveBonusBtn) giveBonusBtn.addEventListener('click', async ()=>{
     const kid = findKid(document.getElementById('bonusKid').value);
     const points = Math.max(0, parseInt(document.getElementById('bonusPoints').value)||0);
     const category = document.getElementById('bonusCategory').value;
     const reason = document.getElementById('bonusReason').value.trim();
+    const direction = view.bonusDirection || 'add';
     if(!kid || points <= 0){ showToast('Pick a kid and an amount first.'); return; }
-    kid.points += points;
-    data.bonusAwards.push({ id: uid(), kidId: kid.id, points, category, reason, ts: Date.now() });
+    if(direction === 'take'){
+      kid.points = Math.max(0, kid.points - points);
+    } else {
+      kid.points += points;
+    }
+    data.bonusAwards.push({ id: uid(), kidId: kid.id, points, category, reason, direction, ts: Date.now() });
     await saveData();
-    showToast(`Gave ${kid.name} +${points} pts!`);
+    showToast(direction==='take' ? `Took ${points} pts from ${kid.name}.` : `Gave ${kid.name} +${points} pts!`);
     render();
   });
 
@@ -1592,8 +2089,53 @@ function renderParent(app){
   app.querySelectorAll('[data-assetName]').forEach(inp=>inp.addEventListener('change', async ()=>{
     const a = findAsset(inp.dataset.assetname); if(a){ a.name = inp.value.trim() || a.name; await saveData(); }
   }));
-  app.querySelectorAll('[data-assetPrice]').forEach(inp=>inp.addEventListener('change', async ()=>{
-    const a = findAsset(inp.dataset.assetprice); if(a){ a.price = Math.max(0.01, Math.round((parseFloat(inp.value)||0)*100)/100); await saveData(); showToast('Price updated.'); }
+  app.querySelectorAll('[data-assetSector]').forEach(sel=>sel.addEventListener('change', async ()=>{
+    const a = findAsset(sel.dataset.assetsector); if(a){ a.sector = sel.value; await saveData(); }
+  }));
+  app.querySelectorAll('[data-assetOrigin]').forEach(inp=>inp.addEventListener('change', async ()=>{
+    const a = findAsset(inp.dataset.assetorigin); if(a){ a.originStory = inp.value.trim(); await saveData(); }
+  }));
+  app.querySelectorAll('[data-postupdate]').forEach(b=>b.addEventListener('click', ()=>{
+    view.assetUpdateForm = view.assetUpdateForm === b.dataset.postupdate ? null : b.dataset.postupdate;
+    view.assetFinForm = null;
+    render();
+  }));
+  app.querySelectorAll('[data-finopen]').forEach(b=>b.addEventListener('click', ()=>{
+    view.assetFinForm = view.assetFinForm === b.dataset.finopen ? null : b.dataset.finopen;
+    view.assetUpdateForm = null;
+    render();
+  }));
+  const assetUpdateSubmit = document.getElementById('assetUpdateSubmit');
+  if(assetUpdateSubmit) assetUpdateSubmit.addEventListener('click', async ()=>{
+    const a = findAsset(assetUpdateSubmit.dataset.asset);
+    const newPrice = Math.max(0.01, Math.round((parseFloat(document.getElementById('assetNewPrice').value)||0)*100)/100);
+    const headline = document.getElementById('assetHeadline').value.trim();
+    if(!a) return;
+    a.price = newPrice;
+    data.priceEvents.push({ id: uid(), assetId: a.id, price: newPrice, headline, ts: Date.now() });
+    await saveData();
+    view.assetUpdateForm = null;
+    showToast(`Posted an update for ${a.name}!`);
+    render();
+  });
+  const finSubmit = document.getElementById('finSubmit');
+  if(finSubmit) finSubmit.addEventListener('click', async ()=>{
+    const a = findAsset(finSubmit.dataset.asset);
+    const quarter = document.getElementById('finQuarter').value.trim() || currentQuarterLabel();
+    const revenue = Math.max(0, Math.round(parseFloat(document.getElementById('finRevenue').value)||0));
+    const cogs = Math.max(0, Math.round(parseFloat(document.getElementById('finCogs').value)||0));
+    const opex = Math.max(0, Math.round(parseFloat(document.getElementById('finOpex').value)||0));
+    if(!a) return;
+    if(revenue<=0){ showToast('Enter a revenue amount first.'); return; }
+    data.financials.push({ id: uid(), assetId: a.id, quarter, revenue, cogs, opex, ts: Date.now() });
+    await saveData();
+    view.assetFinForm = null;
+    showToast(`Saved the ${quarter} report for ${a.name}!`);
+    render();
+  });
+  app.querySelectorAll('[data-delfin]').forEach(b=>b.addEventListener('click', async ()=>{
+    data.financials = data.financials.filter(f=>f.id!==b.dataset.delfin);
+    await saveData(); render();
   }));
   app.querySelectorAll('[data-delasset]').forEach(b=>b.addEventListener('click', async ()=>{
     if(!confirm('Remove this practice stock? Kids holding shares will keep their value based on the last price.')) return;
@@ -1610,9 +2152,13 @@ function renderParent(app){
   if(addAssetBtn) addAssetBtn.addEventListener('click', async ()=>{
     const name = document.getElementById('newAssetName').value.trim();
     const price = Math.max(0.01, Math.round((parseFloat(document.getElementById('newAssetPrice').value)||0)*100)/100);
+    const sector = document.getElementById('newAssetSector').value;
     const blurb = document.getElementById('newAssetBlurb').value.trim();
+    const originStory = document.getElementById('newAssetOrigin').value.trim();
     if(!name){ showToast('Enter a stock name first.'); return; }
-    data.investAssets.push({ id: uid(), name, emoji: selAssetEmoji, price, blurb });
+    const newId = uid();
+    data.investAssets.push({ id: newId, name, emoji: selAssetEmoji, price, blurb, sector, originStory });
+    data.priceEvents.push({ id: uid(), assetId: newId, price, headline: `${name} started trading!`, ts: Date.now() });
     await saveData();
     showToast(`"${name}" added!`);
     render();
@@ -1641,7 +2187,7 @@ function renderParent(app){
     const colorEl = document.getElementById('newKidColor');
     const name = nameEl.value.trim();
     if(!name){ showToast('Enter a name first.'); return; }
-    data.kids.push({ id: uid(), name, emoji: selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0 });
+    data.kids.push({ id: uid(), name, emoji: selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0, lastInterestTs: Date.now() });
     await saveData();
     showToast(`${name} added!`);
     render();
@@ -1740,6 +2286,15 @@ function renderParent(app){
     render();
   });
 
+  const saveInterestBtn = document.getElementById('saveInterestBtn');
+  if(saveInterestBtn) saveInterestBtn.addEventListener('click', async ()=>{
+    const val = Math.max(0, parseFloat(document.getElementById('interestRateInput').value) || 0);
+    data.interestRate = val;
+    await saveData();
+    showToast(`Interest rate set to ${val}% per year.`);
+    render();
+  });
+
   const savePinBtn = document.getElementById('savePinBtn');
   if(savePinBtn) savePinBtn.addEventListener('click', async ()=>{
     const val = document.getElementById('newPin').value.trim();
@@ -1789,6 +2344,7 @@ function renderPin(app){
 
 (async function init(){
   await loadData();
+  await accrueInterest();
   view = { screen: 'home' };
   render();
 
