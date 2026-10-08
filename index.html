@@ -461,6 +461,7 @@ async function loadData(){
   if(!Array.isArray(data.bonusAwards)) data.bonusAwards = [];
   if(typeof data.interestRate !== 'number') data.interestRate = 5;
   if(!Array.isArray(data.interestLog)) data.interestLog = [];
+  if(!Array.isArray(data.changeLog)) data.changeLog = [];
   data.kids.forEach(k => { if(typeof k.cashBalance !== 'number') k.cashBalance = 0; });
   data.kids.forEach(k => { if(!k.lastInterestTs) k.lastInterestTs = Date.now(); });
   data.kids.forEach(k => { if(typeof k.pin !== 'string') k.pin = null; });
@@ -1717,6 +1718,7 @@ function renderKid(app){
     const custom = parseEmojiInput(rawCustom);
     if(rawCustom.trim() && !custom){ showToast('Please type an emoji, like 🚀'); return; }
     kid.emoji = custom || view.iconSel || kid.emoji;
+    logChange(`${kid.name} changed their icon to ${kid.emoji}`);
     await saveData();
     view.iconForm = false;
     showToast('Icon updated!');
@@ -2017,6 +2019,133 @@ function renderKid(app){
     showToast('Request sent to Mom & Dad!');
     render();
   });
+}
+
+/* ===== WEEKLY RECAP ===== */
+function logChange(text){
+  if(!Array.isArray(data.changeLog)) data.changeLog = [];
+  data.changeLog.push({ ts: Date.now(), text });
+  if(data.changeLog.length > 200) data.changeLog = data.changeLog.slice(-200);
+}
+
+function recapPick(options, seed){
+  let h = 0; const str = String(seed);
+  for(let i=0;i<str.length;i++) h = (h*31 + str.charCodeAt(i)) >>> 0;
+  return options[h % options.length];
+}
+
+function buildWeeklyRecap(){
+  const now = Date.now();
+  const since = now - WEEK_MS;
+  const wk = String(startOfWeek(now));
+  const fmtDay = ts => new Date(ts).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+  const core = data.chores.filter(c => c.category === 'core');
+  const lines = [];
+  const kidLines = [];
+  const heads = [];
+  let totalChores = 0, totalPts = 0;
+
+  const stats = data.kids.map(k => {
+    const comps = data.completions.filter(c => c.kidId === k.id && c.ts >= since && c.status !== 'rejected');
+    const pts = comps.filter(c => c.status === 'approved').reduce((a,c) => a + (c.points||0), 0);
+    const byChore = {};
+    comps.forEach(c => { byChore[c.choreName] = (byChore[c.choreName]||0) + 1; });
+    const top = Object.entries(byChore).sort((a,b) => b[1]-a[1])[0];
+    let perfectDays = 0;
+    if(core.length){
+      for(let i=0;i<7;i++){
+        const d = new Date(now - i*86400000); d.setHours(0,0,0,0);
+        const ds = d.getTime(), de = ds + 86400000;
+        const doneIds = new Set(comps.filter(c => c.ts >= ds && c.ts < de).map(c => c.choreId));
+        if(core.every(c => doneIds.has(c.id))) perfectDays++;
+      }
+    }
+    const rewards = data.redemptions.filter(r => r.kidId === k.id && r.ts >= since && r.status === 'approved');
+    const deposits = data.bankTx.filter(t => t.kidId === k.id && t.ts >= since && t.type === 'deposit' && t.status === 'approved').reduce((a,t) => a + (t.amount||0), 0);
+    const interest = data.interestLog.filter(i => i.kidId === k.id && i.ts >= since).reduce((a,i) => a + (i.amount||0), 0);
+    const skills = data.skillLogs.filter(x => x.kidId === k.id && x.ts >= since && x.status !== 'rejected').length;
+    const bonusGiven = data.bonusAwards.filter(b => b.kidId === k.id && b.ts >= since && b.direction !== 'take').reduce((a,b) => a + b.points, 0);
+    totalChores += comps.length; totalPts += pts;
+    return { k, comps, pts, top, perfectDays, rewards, deposits, interest, skills, bonusGiven };
+  });
+
+  let headline;
+  if(totalChores === 0) headline = recapPick([
+    "The chore chart enjoyed a well-deserved vacation this week.",
+    "A quiet week. The dust bunnies held a victory parade.",
+    "Zero chores logged. The house is running on vibes alone."], wk);
+  else if(totalChores < 10) headline = recapPick([
+    "A gentle week. The dust bunnies are cautiously optimistic.",
+    "Some chores happened. History will remember this.",
+    "Slow and steady wins the tidy-house race."], wk);
+  else headline = recapPick([
+    "Absolute chore chaos, the good kind.",
+    "The house has never been this well-managed. Suspicious, but we'll take it.",
+    "A power week. Somebody call the Guinness people."], wk);
+
+  const ranked = stats.filter(x => x.comps.length).sort((a,b) => b.comps.length - a.comps.length);
+  if(ranked.length){
+    const t = ranked[0];
+    lines.push(recapPick([
+      `🏆 ${t.k.name} led the pack with ${t.comps.length} chore${t.comps.length===1?'':'s'}. Tidiness at hotel-staff levels.`,
+      `🏆 ${t.k.name} took the chore crown (${t.comps.length} done). Please bow accordingly.`,
+      `🏆 MVP of the week: ${t.k.name}, with ${t.comps.length} chore${t.comps.length===1?'':'s'}. Mop in hand, legend in the making.`], wk + t.k.name));
+  }
+  lines.push(`⭐ The family earned ${totalPts} approved points across ${totalChores} chore${totalChores===1?'':'s'}.`);
+  const allTop = {};
+  stats.forEach(x => x.comps.forEach(c => { allTop[c.choreName] = (allTop[c.choreName]||0) + 1; }));
+  const fav = Object.entries(allTop).sort((a,b) => b[1]-a[1])[0];
+  if(fav) lines.push(`🔁 Most popular chore: "${fav[0]}" (${fav[1]}x). Clearly someone's favorite, or the easiest.`);
+  const perfect = stats.filter(x => x.perfectDays > 0);
+  if(perfect.length) lines.push('🌟 Perfect core-chore days: ' + perfect.map(x => `${x.k.name} (${x.perfectDays})`).join(', ') + '. Gold stars all around.');
+
+  const isLittle = k => {
+    if(!k.birthdate) return false;
+    const b = new Date(k.birthdate + 'T00:00:00');
+    return !isNaN(b) && (now - b.getTime()) / (365.25*86400000) < 4;
+  };
+  stats.forEach(x => {
+    const items = [];
+    if(!x.comps.length && isLittle(x.k)) items.push("Too little for chores, but cheering from the sidelines. 📣");
+    else if(!x.comps.length) items.push(recapPick([
+      "0 chores done. The dust bunnies send their thanks.",
+      "No chores logged this week. Bold strategy.",
+      "Chore count: 0. The couch is jealous of how much you were on it."], wk + x.k.name));
+    else items.push(`${x.comps.length} chore${x.comps.length===1?'':'s'} done${x.pts ? ` (+${x.pts} pts approved)` : ''}${x.top ? `, mostly "${x.top[0]}"` : ''}.`);
+    if(x.perfectDays) items.push(`${x.perfectDays} perfect core-chore day${x.perfectDays===1?'':'s'}.`);
+    if(x.skills) items.push(`Practiced ${x.skills} skill session${x.skills===1?'':'s'}. Future prodigy alert.`);
+    if(x.bonusGiven) items.push(`Got ${x.bonusGiven} bonus points from the grown-ups.`);
+    x.rewards.forEach(r => items.push(`Cashed in "${r.rewardName}". Points well spent, allegedly.`));
+    if(x.deposits > 0) items.push(`Deposited ${fmtMoney(x.deposits)} into the bank. Future-you says thanks.`);
+    if(x.interest > 0) items.push(`Earned ${fmtMoney(x.interest)} in interest for doing absolutely nothing. That's compound interest, kids.`);
+    items.push(`Balance now: ${x.k.points} pts, ${fmtMoney(x.k.cashBalance)} in the bank.`);
+    kidLines.push({ name: x.k.name, emoji: x.k.emoji, items });
+  });
+
+  const pending = data.completions.filter(c => c.status === 'pending').length
+    + data.redemptions.filter(r => r.status === 'pending').length
+    + data.bankTx.filter(t => t.status === 'pending').length
+    + data.skillLogs.filter(x => x.status === 'pending').length;
+  if(pending) heads.push(`${pending} thing${pending===1?' is':'s are'} waiting for a parent to approve. The kids are watching the clock.`);
+  const rewardsSorted = data.rewards.slice().sort((a,b) => a.cost - b.cost);
+  stats.forEach(x => {
+    const next = rewardsSorted.find(r => r.cost > x.k.points);
+    if(next && next.cost - x.k.points <= 30) heads.push(`${x.k.name} is only ${next.cost - x.k.points} pts from "${next.name}". A little push and it's theirs.`);
+    if(x.k.cashBalance > 0 && x.k.cashBalance < MIN_INTEREST_BALANCE) heads.push(`${x.k.name} is ${fmtMoney(MIN_INTEREST_BALANCE - x.k.cashBalance)} away from earning interest (it starts at ${fmtMoney(MIN_INTEREST_BALANCE)}).`);
+    if(!x.comps.length && !isLittle(x.k)) heads.push(`${x.k.name} had no chores logged. Worth a friendly check-in, or a nudge toward an easy win.`);
+  });
+
+  const changes = (data.changeLog || []).filter(c => c.ts >= since).map(c => `${fmtDay(c.ts)}: ${c.text}`);
+
+  const range = `${fmtDay(since)} – ${fmtDay(now)}`;
+  const text = [
+    `Chore Champions Weekly Recap (${range})`, headline, '',
+    'Family highlights', ...lines.map(l => '- ' + l), '',
+    ...kidLines.flatMap(k => [`${k.emoji} ${k.name}`, ...k.items.map(i => '- ' + i), '']),
+    ...(heads.length ? ['Heads up', ...heads.map(h => '- ' + h), ''] : []),
+    ...(changes.length ? ['Changes this week', ...changes.map(c => '- ' + c)] : [])
+  ].join('\n').trim();
+  return { range, headline, lines, kidLines, heads, changes, text };
 }
 
 function renderParent(app){
@@ -2355,6 +2484,23 @@ function renderParent(app){
         <button class="btn go" id="addAssetBtn">Add stock</button>
       </div>
     `;
+  } else if(tab === 'recap'){
+    const r = buildWeeklyRecap();
+    const ul = arr => arr.map(x => `<div style="margin:6px 0;line-height:1.4;">${esc(x)}</div>`).join('');
+    body = `<div class="section-label">Weekly recap · ${esc(r.range)}</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div class="item-name" style="margin-bottom:8px;">${esc(r.headline)}</div>
+        ${ul(r.lines)}
+      </div>
+      ${r.kidLines.map(k => `
+        <div class="card" style="margin-bottom:12px;">
+          <div class="item-name" style="margin-bottom:6px;">${k.emoji} ${esc(k.name)}</div>
+          ${ul(k.items)}
+        </div>`).join('')}
+      ${r.heads.length ? `<div class="card" style="margin-bottom:12px;"><div class="item-name" style="margin-bottom:6px;">👀 Heads up</div>${ul(r.heads)}</div>` : ''}
+      ${r.changes.length ? `<div class="card" style="margin-bottom:12px;"><div class="item-name" style="margin-bottom:6px;">🛠️ Changes this week</div>${ul(r.changes)}</div>` : ''}
+      <button class="btn go" id="copyRecapBtn">📋 Copy recap</button>
+      <p class="hint">Paste it into a family chat or read it at dinner. Covers the last 7 days.</p>`;
   } else if(tab === 'settings'){
     body = `<div class="section-label">Settings</div>
       <div class="card" style="margin-bottom:16px;">
@@ -2419,6 +2565,7 @@ function renderParent(app){
       <button class="tab ${tab==='skills'?'active':''}" data-ptab="skills">Skills</button>
       <button class="tab ${tab==='rewards'?'active':''}" data-ptab="rewards">Rewards</button>
       <button class="tab ${tab==='bank'?'active':''}" data-ptab="bank">Money</button>
+      <button class="tab ${tab==='recap'?'active':''}" data-ptab="recap">Recap</button>
       <button class="tab ${tab==='settings'?'active':''}" data-ptab="settings">Settings</button>
     </div>
     ${body}
@@ -2645,6 +2792,7 @@ function renderParent(app){
     const kidEmoji = parseEmojiInput(rawKidEmoji);
     if(rawKidEmoji.trim() && !kidEmoji){ showToast('Please type an emoji, like 🚀'); return; }
     data.kids.push({ id: uid(), name, emoji: kidEmoji || selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0, lastInterestTs: Date.now(), pin: null });
+    logChange(`${name} joined the family app`);
     await saveData();
     showToast(`${name} added!`);
     render();
@@ -2693,6 +2841,7 @@ function renderParent(app){
     const choreEmoji = parseEmojiInput(rawChoreEmoji);
     if(rawChoreEmoji.trim() && !choreEmoji){ showToast('Please type an emoji, like 🧹'); return; }
     data.chores.push({ id: uid(), name, points: Math.max(0, parseInt(ptsEl.value)||0), emoji: choreEmoji || selChoreEmoji, frequency, category });
+    logChange(`New chore added: ${choreEmoji || selChoreEmoji} ${name} (${category})`);
     await saveData();
     showToast(`"${name}" added!`);
     render();
@@ -2778,6 +2927,20 @@ function renderParent(app){
     await saveData();
     showToast('New treasure box puzzle started!');
     render();
+  });
+
+  const copyRecapBtn = document.getElementById('copyRecapBtn');
+  if(copyRecapBtn) copyRecapBtn.addEventListener('click', async ()=>{
+    const text = buildWeeklyRecap().text;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('Recap copied!');
+    }catch(e){
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); showToast('Recap copied!'); }catch(_){ showToast("Couldn't copy. Select the text instead."); }
+      ta.remove();
+    }
   });
 
   const downloadBackupBtn = document.getElementById('downloadBackupBtn');
