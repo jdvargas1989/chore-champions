@@ -293,7 +293,18 @@ const STORAGE_KEY = 'chorecamp-data-v1';
 const storageAPI = db ? {
   async get(key){
     const doc = await db.collection(FIRESTORE_COLLECTION).doc(key).get();
-    if(!doc.exists) throw new Error('not found');
+    if(!doc.exists){
+      // Nothing in the cloud yet. Before giving up and falling back to
+      // placeholder defaults, check whether this device already has real
+      // data saved locally from before Firebase was connected — if so,
+      // migrate that up to Firestore instead of overwriting it with
+      // Emma/Jack sample data.
+      const localRaw = localStorage.getItem(key);
+      if(localRaw !== null){
+        return { key, value: localRaw, shared: true, migrated: true };
+      }
+      throw new Error('not found');
+    }
     return { key, value: doc.data().value, shared: true };
   },
   async set(key, value){
@@ -2752,7 +2763,47 @@ function renderKidPin(app){
   }));
 }
 
+async function recoverOrphanedLocalData(){
+  // One-time safety net for the bug where turning on Firebase caused the
+  // app to write placeholder Emma/Jack data to the cloud while a device's
+  // real setup was still sitting untouched in its localStorage. If this
+  // device has local data and the cloud currently looks like the untouched
+  // default sample data, offer to restore from this device instead.
+  if(!db) return;
+  try{
+    const localRaw = localStorage.getItem(STORAGE_KEY);
+    if(!localRaw) return;
+    const localParsed = JSON.parse(localRaw);
+    const localKidNames = (localParsed.kids||[]).map(k=>k.name).join(',');
+    if(localKidNames === 'Emma,Jack' || !localKidNames) return; // nothing distinctive to recover
+
+    const doc = await db.collection(FIRESTORE_COLLECTION).doc(STORAGE_KEY).get();
+    if(!doc.exists) return; // handled by normal migration path in storageAPI.get
+    const cloudParsed = JSON.parse(doc.data().value);
+    const cloudKidNames = (cloudParsed.kids||[]).map(k=>k.name).join(',');
+    const cloudLooksLikeUntouchedDefault = cloudKidNames === 'Emma,Jack'
+      && (cloudParsed.completions||[]).length === 0
+      && (cloudParsed.redemptions||[]).length === 0;
+
+    if(cloudLooksLikeUntouchedDefault && localKidNames !== cloudKidNames){
+      const restore = confirm(
+        "This device has saved chore data (" + localKidNames.replace(/,/g,', ') +
+        ") that looks different from what's currently in the cloud (Emma/Jack sample data).\n\n" +
+        "This can happen if the cloud got initialized with placeholder data before your real setup synced.\n\n" +
+        "Restore your data from this device to the cloud now?"
+      );
+      if(restore){
+        await db.collection(FIRESTORE_COLLECTION).doc(STORAGE_KEY).set({ value: localRaw, updatedAt: Date.now() });
+        showToast('Restored your data to the cloud.');
+      }
+    }
+  }catch(e){
+    console.error('Recovery check failed', e);
+  }
+}
+
 (async function init(){
+  await recoverOrphanedLocalData();
   await loadData();
   await accrueInterest();
   if(ensureTreasureBox()){ await saveData(); }
