@@ -329,8 +329,27 @@ let parentSession = false;
 let pinBuffer = '';
 let kidPinBuffer = '';
 
-const KID_EMOJI = ['🦊','🐻','🐼','🦁','🐯','🐨','🐸','🐧','🦄','🐙','🦋','🐢'];
-const CHORE_EMOJI = ['🛏️','🐾','🗑️','🍽️','🧹','📚','🧺','🪥','🧼','🚗','🌱','📦'];
+const KID_EMOJI = ['🦊','🐻','🐼','🦁','🐯','🐨','🐸','🐧','🦄','🐙','🦋','🐢',
+  '🐰','🐱','🐶','🐵','🐮','🐷','🦉','🦖','🐬','🦈','🐝','🐞','🦩','🦜','🐺','🦒','🐘','🦔','🦥','🐳',
+  '🌟','🚀','⚽','🎨','🎸','🦸','🧙','🧚','🧜','🤖','👑','🌈','🔥','⚡','🌸','🍀'];
+const CHORE_EMOJI = ['🛏️','🐾','🗑️','🍽️','🧹','📚','🧺','🪥','🧼','🚗','🌱','📦',
+  '🧽','🪣','🧴','🪟','🛁','🚿','🚽','🧻','🍳','🥣','🥕','🍎','🥪','🍴','🧃','🛒',
+  '🐶','🐱','🐠','🐹','🐔','🐴','🪴','🌻','💧','🚜','🧦','👕','👖','🧥','👟','🎒',
+  '✏️','📝','🎹','🎻','🏃','🚲','🧸','🪑','♻️','📬','💡','🔑','🧠','📖','🗂️','🦷','☀️','🌙','🔔','⭐'];
+
+// Accepts one typed/pasted emoji. Returns it, or null if the text isn't an emoji.
+function parseEmojiInput(raw){
+  raw = (raw || '').trim();
+  if(!raw) return null;
+  let first;
+  if(typeof Intl !== 'undefined' && Intl.Segmenter){
+    first = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(raw)][0].segment;
+  } else {
+    first = Array.from(raw)[0];
+  }
+  if(!/\p{Extended_Pictographic}/u.test(first) || /[<>&"'`]/.test(first)) return null;
+  return first;
+}
 const REWARD_EMOJI = ['📱','🎬','🍦','🌙','💵','🎮','🍕','🎨','🏊','🎟️'];
 const GOAL_EMOJI = ['🎯','🚲','🎮','🧩','🎧','⚽','🛹','📷','🐶','🎁'];
 const ASSET_EMOJI = ['🧸','🌱','🚀','🎮','🍔','🎬','⚡','🏠','🐾','📦'];
@@ -1634,8 +1653,22 @@ function renderKid(app){
         <h2>${esc(kid.name)}</h2>
         <div class="point-total">Balance: <b>${kid.points}</b> pts &nbsp;·&nbsp; <b>${fmtMoney(kid.cashBalance)}</b> in bank</div>
       </div>
-      <button class="pill-btn" id="setPinBtn" style="font-size:11px;padding:6px 10px;">🔒 ${kid.pin?'Change':'Set'} PIN</button>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <button class="pill-btn" id="editIconBtn" style="font-size:11px;padding:6px 10px;">✏️ Icon</button>
+        <button class="pill-btn" id="setPinBtn" style="font-size:11px;padding:6px 10px;">🔒 ${kid.pin?'Change':'Set'} PIN</button>
+      </div>
     </div>
+    ${view.iconForm ? `
+      <div class="form-box" style="margin-bottom:14px;">
+        <div class="section-label" style="margin-top:0;">Pick your icon</div>
+        <div class="emoji-choices" id="kidIconChoices" style="max-height:150px;overflow:auto;">${KID_EMOJI.map(e=>`<button type="button" data-e="${e}" class="${e===(view.iconSel||kid.emoji)?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row"><input type="text" id="kidIconCustom" maxlength="8" placeholder="Or type any emoji"></div>
+        <div style="display:flex;gap:8px;">
+          <button class="btn go" id="saveKidIconBtn">Save icon</button>
+          <button class="btn ghost" id="cancelKidIconBtn">Cancel</button>
+        </div>
+      </div>
+    ` : ''}
     ${view.setPinForm ? `
       <div class="form-box" style="margin-bottom:14px;">
         <div class="section-label" style="margin-top:0;">${kid.pin?'Change':'Set'} your PIN</div>
@@ -1660,6 +1693,33 @@ function renderKid(app){
   document.getElementById('homeBtn').addEventListener('click', ()=>{ view={screen:'home'}; render(); });
   document.getElementById('setPinBtn').addEventListener('click', ()=>{
     view.setPinForm = !view.setPinForm;
+    view.iconForm = false;
+    render();
+  });
+  document.getElementById('editIconBtn').addEventListener('click', ()=>{
+    view.iconForm = !view.iconForm;
+    view.setPinForm = false;
+    view.iconSel = kid.emoji;
+    render();
+  });
+  const kidIconChoices = document.getElementById('kidIconChoices');
+  if(kidIconChoices) kidIconChoices.querySelectorAll('button').forEach(btn=>btn.addEventListener('click', ()=>{
+    kidIconChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
+    btn.classList.add('sel');
+    view.iconSel = btn.dataset.e;
+    const custom = document.getElementById('kidIconCustom'); if(custom) custom.value = '';
+  }));
+  const cancelKidIconBtn = document.getElementById('cancelKidIconBtn');
+  if(cancelKidIconBtn) cancelKidIconBtn.addEventListener('click', ()=>{ view.iconForm = false; render(); });
+  const saveKidIconBtn = document.getElementById('saveKidIconBtn');
+  if(saveKidIconBtn) saveKidIconBtn.addEventListener('click', async ()=>{
+    const rawCustom = document.getElementById('kidIconCustom').value;
+    const custom = parseEmojiInput(rawCustom);
+    if(rawCustom.trim() && !custom){ showToast('Please type an emoji, like 🚀'); return; }
+    kid.emoji = custom || view.iconSel || kid.emoji;
+    await saveData();
+    view.iconForm = false;
+    showToast('Icon updated!');
     render();
   });
   const saveKidPinBtn = document.getElementById('saveKidPinBtn');
@@ -2065,7 +2125,8 @@ function renderParent(app){
       `).join('') || '<div class="empty">No kids yet.</div>'}</div>
       <div class="form-box">
         <div class="section-label" style="margin-top:0">Add a kid</div>
-        <div class="emoji-choices" id="kidEmojiChoices">${KID_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="emoji-choices" id="kidEmojiChoices" style="max-height:150px;overflow:auto;">${KID_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row"><input type="text" id="newKidEmojiCustom" maxlength="8" placeholder="Or type any emoji"></div>
         <div class="form-row">
           <input type="text" id="newKidName" placeholder="Name">
           <input type="color" id="newKidColor" value="#EF6F53" style="width:44px;padding:2px;flex:0;">
@@ -2095,7 +2156,8 @@ function renderParent(app){
       `).join('') || '<div class="empty">No chores yet.</div>'}</div>
       <div class="form-box">
         <div class="section-label" style="margin-top:0">Add a chore</div>
-        <div class="emoji-choices" id="choreEmojiChoices">${CHORE_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="emoji-choices" id="choreEmojiChoices" style="max-height:150px;overflow:auto;">${CHORE_EMOJI.map((e,i)=>`<button type="button" data-e="${e}" class="${i===0?'sel':''}">${e}</button>`).join('')}</div>
+        <div class="form-row"><input type="text" id="newChoreEmojiCustom" maxlength="8" placeholder="Or type any emoji"></div>
         <div class="form-row">
           <input type="text" id="newChoreName" placeholder="Chore name">
           <input type="number" id="newChorePoints" placeholder="Points" value="10" style="max-width:90px;">
@@ -2579,7 +2641,10 @@ function renderParent(app){
     const colorEl = document.getElementById('newKidColor');
     const name = nameEl.value.trim();
     if(!name){ showToast('Enter a name first.'); return; }
-    data.kids.push({ id: uid(), name, emoji: selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0, lastInterestTs: Date.now(), pin: null });
+    const rawKidEmoji = document.getElementById('newKidEmojiCustom').value;
+    const kidEmoji = parseEmojiInput(rawKidEmoji);
+    if(rawKidEmoji.trim() && !kidEmoji){ showToast('Please type an emoji, like 🚀'); return; }
+    data.kids.push({ id: uid(), name, emoji: kidEmoji || selKidEmoji, color: colorEl.value, points: 0, cashBalance: 0, lastInterestTs: Date.now(), pin: null });
     await saveData();
     showToast(`${name} added!`);
     render();
@@ -2624,7 +2689,10 @@ function renderParent(app){
     if(!name){ showToast('Enter a chore name first.'); return; }
     const category = catEl.value === 'bonus' ? 'bonus' : 'core';
     const frequency = category === 'core' ? 'daily' : (freqEl.value === 'weekly' ? 'weekly' : 'daily');
-    data.chores.push({ id: uid(), name, points: Math.max(0, parseInt(ptsEl.value)||0), emoji: selChoreEmoji, frequency, category });
+    const rawChoreEmoji = document.getElementById('newChoreEmojiCustom').value;
+    const choreEmoji = parseEmojiInput(rawChoreEmoji);
+    if(rawChoreEmoji.trim() && !choreEmoji){ showToast('Please type an emoji, like 🧹'); return; }
+    data.chores.push({ id: uid(), name, points: Math.max(0, parseInt(ptsEl.value)||0), emoji: choreEmoji || selChoreEmoji, frequency, category });
     await saveData();
     showToast(`"${name}" added!`);
     render();
