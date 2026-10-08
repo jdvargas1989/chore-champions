@@ -1551,7 +1551,7 @@ function renderKid(app){
         <div class="section-label" style="margin-top:0">Ready to use</div>
         <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--green-deep);">${fmtMoney(kid.cashBalance)}</div>
         <p class="hint">Mom and Dad hold onto this for you, just like a real bank.</p>
-        <p class="hint">🌱 Growing at ${data.interestRate}%/year once you have $${MIN_INTEREST_BALANCE}+ saved, paid every week${lastInterest ? ` · last payment +${fmtMoney(lastInterest.amount)}` : ''}</p>
+        <p class="hint">🌱 Growing at ${data.interestRate}%/year once you have $${MIN_INTEREST_BALANCE}+ saved (money in your goals counts too), paid every week${lastInterest ? ` · last payment +${fmtMoney(lastInterest.amount)}` : ''}</p>
         ${totalInterestEarned > 0 ? `<p class="hint">Earned ${fmtMoney(totalInterestEarned)} in interest so far</p>` : ''}
         <button class="btn go" id="openDeposit">Deposit cash</button>
         ${view.depositForm ? `
@@ -2131,7 +2131,8 @@ function buildWeeklyRecap(){
   stats.forEach(x => {
     const next = rewardsSorted.find(r => r.cost > x.k.points);
     if(next && next.cost - x.k.points <= 30) heads.push(`${x.k.name} is only ${next.cost - x.k.points} pts from "${next.name}". A little push and it's theirs.`);
-    if(x.k.cashBalance > 0 && x.k.cashBalance < MIN_INTEREST_BALANCE) heads.push(`${x.k.name} is ${fmtMoney(MIN_INTEREST_BALANCE - x.k.cashBalance)} away from earning interest (it starts at ${fmtMoney(MIN_INTEREST_BALANCE)}).`);
+    const interestBase = x.k.cashBalance + data.savingsGoals.filter(g => g.kidId === x.k.id).reduce((a,g) => a + g.saved, 0);
+    if(interestBase > 0 && interestBase < MIN_INTEREST_BALANCE) heads.push(`${x.k.name} is ${fmtMoney(MIN_INTEREST_BALANCE - interestBase)} away from earning interest (cash plus goal savings need to reach ${fmtMoney(MIN_INTEREST_BALANCE)}).`);
     if(!x.comps.length && !isLittle(x.k)) heads.push(`${x.k.name} had no chores logged. Worth a friendly check-in, or a nudge toward an easy win.`);
   });
 
