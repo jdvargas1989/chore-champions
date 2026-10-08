@@ -398,11 +398,35 @@ function defaultData(){
 }
 
 async function loadData(){
+  // Only a genuinely missing document means "first run, use defaults".
+  // Any other failure (offline, timeout, permissions) must NEVER fall back to
+  // defaults and save, or it overwrites the real data in the cloud.
+  let res = null, lastErr = null;
+  for(let attempt = 0; attempt < 3; attempt++){
+    try{
+      res = await storageAPI.get(STORAGE_KEY, true);
+      lastErr = null;
+      break;
+    }catch(e){
+      lastErr = e;
+      if(e && e.message === 'not found') break;
+      await new Promise(r => setTimeout(r, 800 * (attempt + 1)));
+    }
+  }
+  if(lastErr && lastErr.message !== 'not found'){
+    loadFailed = true;
+    data = defaultData();
+    console.error('Load failed; saving is disabled to protect existing data', lastErr);
+    setTimeout(()=>showToast("Couldn't load your data — saving is paused. Check your connection and reload."), 300);
+    return;
+  }
   try{
-    const res = await storageAPI.get(STORAGE_KEY, true);
     data = res && res.value ? JSON.parse(res.value) : defaultData();
   }catch(e){
+    loadFailed = true;
     data = defaultData();
+    console.error('Stored data was unreadable; saving is disabled', e);
+    return;
   }
   if(!data.pin) data.pin = '0000';
   if(!Array.isArray(data.bankTx)) data.bankTx = [];
@@ -425,10 +449,12 @@ async function loadData(){
   data.chores.forEach(c => { if(c.category !== 'bonus') c.category = 'core'; if(c.category === 'core') c.frequency = 'daily'; });
   data.rewards.forEach(r => { if(typeof r.cash !== 'number') r.cash = 0; });
   data.bankTx.forEach(t => { if(!t.purpose) t.purpose = 'general'; });
-  await saveData();
+  if(!res || res.migrated) await saveData(); // first run or local->cloud migration only
 }
 
+let loadFailed = false;
 async function saveData(){
+  if(loadFailed) return; // never overwrite real data after a failed load
   try{
     await storageAPI.set(STORAGE_KEY, JSON.stringify(data), true);
   }catch(e){
@@ -2816,6 +2842,7 @@ async function recoverOrphanedLocalData(){
       if(doc.metadata.hasPendingWrites) return;
       try{
         data = JSON.parse(doc.data().value);
+        loadFailed = false; // a good snapshot means we have real data again
         render();
       }catch(e){
         console.error('Failed to apply synced data', e);
