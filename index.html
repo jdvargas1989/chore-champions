@@ -2323,6 +2323,14 @@ function renderParent(app){
         <button class="btn warn" id="newPuzzleBtn" style="margin-top:8px;">🔄 New puzzle this week</button>
       </div>
       ` : ''}
+      <div class="card" style="margin-bottom:16px;">
+        <div class="item-name" style="margin-bottom:6px;">💾 Backup &amp; restore</div>
+        <p class="hint" style="margin-bottom:10px;">Download a copy of everything (kids, points, bank, chores) to this device. Do it now and then, and before big changes.</p>
+        <button class="btn go" id="downloadBackupBtn">⬇️ Download backup</button>
+        <div style="height:14px;"></div>
+        <p class="hint" style="margin-bottom:6px;"><b>Restore</b> from a backup file. This replaces everything currently saved.</p>
+        <input type="file" id="restoreFileInput" accept=".json,application/json">
+      </div>
       <div class="card">
         <div class="item-name" style="margin-bottom:10px;">Change parent PIN</div>
         <div class="form-row">
@@ -2702,6 +2710,53 @@ function renderParent(app){
     await saveData();
     showToast('New treasure box puzzle started!');
     render();
+  });
+
+  const downloadBackupBtn = document.getElementById('downloadBackupBtn');
+  if(downloadBackupBtn) downloadBackupBtn.addEventListener('click', ()=>{
+    try{
+      const payload = JSON.stringify({ app: 'chore-champions', exportedAt: new Date().toISOString(), data }, null, 2);
+      const blob = new Blob([payload], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0,10);
+      a.href = url; a.download = 'chore-champions-backup-' + stamp + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 5000);
+      showToast('Backup downloaded.');
+    }catch(e){
+      console.error('Backup failed', e);
+      showToast("Couldn't create the backup.");
+    }
+  });
+
+  const restoreFileInput = document.getElementById('restoreFileInput');
+  if(restoreFileInput) restoreFileInput.addEventListener('change', async ()=>{
+    const file = restoreFileInput.files && restoreFileInput.files[0];
+    if(!file) return;
+    try{
+      const parsed = JSON.parse(await file.text());
+      const restored = parsed && parsed.data ? parsed.data : parsed;
+      if(!restored || !Array.isArray(restored.kids) || !restored.kids.length || !Array.isArray(restored.chores)){
+        showToast("That file doesn't look like a Chore Champions backup.");
+        restoreFileInput.value = '';
+        return;
+      }
+      const names = restored.kids.map(k=>k.name).join(', ');
+      if(!confirm('Restore this backup (' + names + ')? It replaces everything currently saved, on all devices.')){
+        restoreFileInput.value = '';
+        return;
+      }
+      data = restored;
+      loadFailed = false;
+      await saveData();
+      showToast('Backup restored.');
+      setTimeout(()=>location.reload(), 600);
+    }catch(e){
+      console.error('Restore failed', e);
+      showToast("Couldn't read that file.");
+      restoreFileInput.value = '';
+    }
   });
 
   const savePinBtn = document.getElementById('savePinBtn');
