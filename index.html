@@ -1271,12 +1271,53 @@ function renderBizCard(rec, wk){
       <p class="hint">Real numbers from the company's own SEC reports, through ${esc(v.asOf||'')}. For learning, not investing advice.</p>
     </div>`;
 }
+const REAL_FUNDS = [
+  { ticker: 'SPY', name: '500 Companies Fund', emoji: '🏢', sector: 'Other',
+    blurb: 'A tiny slice of 500 of the biggest U.S. companies, all in one.',
+    originStory: 'Instead of picking one winner, this fund owns a little bit of 500 companies. If a few stumble, the rest can keep it steady.' },
+  { ticker: 'GLD', name: 'Gold', emoji: '🪙', sector: 'Other',
+    blurb: 'Real gold, held in a vault. People have valued it for thousands of years.',
+    originStory: 'Gold makes no profit and no products. Its price moves with how much people want to feel safe.' }
+];
+function renderMarketPanel(wk){
+  if(!wk || !wk.prices) return '';
+  const tiles = [['SPY','🏢','500 big companies'],['GLD','🪙','Gold'],['USO','🛢️','Oil']].map(([t,e,label])=>{
+    const r = wk.prices[t]; if(!r || r.close===null || r.close===undefined) return '';
+    const c = r.weekChangePct;
+    const col = c===null||c===undefined ? 'var(--ink-soft)' : (c>=0 ? 'var(--green-deep)' : 'var(--red-deep)');
+    return `<div style="flex:1;min-width:92px;text-align:center;padding:8px 4px;border-radius:12px;background:#FFF8E6;">
+      <div style="font-size:22px">${e}</div><div class="hint" style="font-weight:800;">${label}</div>
+      <div style="font-weight:800;color:${col};">${c===null||c===undefined?'–':(c>=0?'▲ +':'▼ ')+c.toFixed(1)+'%'}</div></div>`;
+  }).join('');
+  if(!tiles.trim()) return '';
+  return `<div class="section-label" style="margin-top:0">📅 The real market this week</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">${tiles}</div>
+    <p class="hint">Fund prices as of ${esc(wk.asOf||'')}. Oil and gold are shown through funds that track them.</p>`;
+}
+async function syncRealPrices(){
+  const wk = marketData.weekly; if(!wk || !wk.prices) return 0;
+  let n = 0;
+  data.investAssets.forEach(a=>{
+    if(!a.liveTicker || a.lastSyncAsOf === wk.asOf) return;
+    const r = wk.prices[a.liveTicker]; if(!r || !(r.close>0)) return;
+    const price = Math.round(r.close*100)/100;
+    const c = r.weekChangePct;
+    const headline = `${a.name} ${c===null||c===undefined ? 'updated' : (c>=0?'rose ':'fell ')+Math.abs(c).toFixed(1)+'%'} in the real market this week`;
+    a.price = price; a.lastSyncAsOf = wk.asOf;
+    data.priceEvents.push({ id: uid(), assetId: a.id, price, headline, ts: Date.now() });
+    n++;
+  });
+  if(n) await saveData();
+  return n;
+}
+
 function renderBusinessExplorer(){
   if(!marketData.loaded) return '';
   const fin = marketData.fin, wk = marketData.weekly, dm = marketData.diamonds;
   if(!fin || !fin.companies) return `
     <div class="card" style="margin-bottom:14px;">
-      <div class="section-label" style="margin-top:0">🔍 Real Business Explorer</div>
+      ${renderMarketPanel(wk)}
+      <div class="section-label" style="margin-top:${wk?'12px':'0'}">🔍 Real Business Explorer</div>
       <p class="hint">Coming soon: real companies, real profits, and whether the price looks cheap or pricey. Mom or Dad is setting up the weekly update.</p>
     </div>`;
   const recs = Object.values(fin.companies);
@@ -1295,7 +1336,8 @@ function renderBusinessExplorer(){
   const asOf = wk && wk.asOf ? ` Prices as of ${esc(wk.asOf)}.` : '';
   return `
     <div class="card" style="margin-bottom:14px;">
-      <div class="section-label" style="margin-top:0">🔍 Real Business Explorer</div>
+      ${renderMarketPanel(wk)}
+      <div class="section-label" style="margin-top:${wk?'12px':'0'}">🔍 Real Business Explorer</div>
       <p class="hint">Look inside real companies: what they earn, what they're worth, and whether the price makes sense.${asOf}</p>
       ${sections}${picks}
     </div>`;
@@ -2587,6 +2629,15 @@ function renderParent(app){
 
       <div class="section-label">Practice stocks</div>
       <p class="hint" style="margin-top:-6px;">These prices are made up by you, not pulled from the real market — a safe way for kids to learn what investing feels like. Post an update with a short reason so kids see cause-and-effect, not random moves.</p>
+      <div class="card" style="margin-bottom:14px;">
+        <div class="section-label" style="margin-top:0">📡 Real-market practice funds</div>
+        <p class="hint">Add a 500 Companies Fund and Gold whose prices follow the real market each week. Pretend money only. Updates come from the Friday data job.</p>
+        ${marketData.weekly ? `<p class="hint">Latest market data: ${esc(marketData.weekly.asOf||'')}</p>` : `<p class="hint">No market data yet. Run the "Market data" workflow on GitHub first.</p>`}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          ${REAL_FUNDS.some(f=>!data.investAssets.some(a=>a.liveTicker===f.ticker)) ? '<button class="btn go" id="addRealFundsBtn">Add 500 Companies Fund &amp; Gold</button>' : ''}
+          ${data.investAssets.some(a=>a.liveTicker) && marketData.weekly ? '<button class="btn go" id="syncRealPricesBtn" style="background:var(--coral);">Update prices from this week</button>' : ''}
+        </div>
+      </div>
       <div class="item-list">${data.investAssets.map(a=>{
         const open = view.assetUpdateForm === a.id;
         const finOpen = view.assetFinForm === a.id;
@@ -2921,6 +2972,24 @@ function renderParent(app){
     assetEmojiChoices.querySelectorAll('button').forEach(x=>x.classList.remove('sel'));
     btn.classList.add('sel'); selAssetEmoji = btn.dataset.e;
   }));
+  const addRealFundsBtn = document.getElementById('addRealFundsBtn');
+  if(addRealFundsBtn) addRealFundsBtn.addEventListener('click', async ()=>{
+    const wk = marketData.weekly;
+    REAL_FUNDS.forEach(f=>{
+      if(data.investAssets.some(a=>a.liveTicker===f.ticker)) return;
+      const r = wk && wk.prices && wk.prices[f.ticker];
+      const price = r && r.close>0 ? Math.round(r.close*100)/100 : (f.ticker==='GLD' ? 300 : 600);
+      const id = uid();
+      data.investAssets.push({ id, name: f.name, emoji: f.emoji, price, blurb: f.blurb, sector: f.sector, originStory: f.originStory, liveTicker: f.ticker, lastSyncAsOf: (r && r.close>0 && wk) ? wk.asOf : '' });
+      data.priceEvents.push({ id: uid(), assetId: id, price, headline: `${f.name} started trading!`, ts: Date.now() });
+    });
+    await saveData(); showToast('Real-market funds added!'); render();
+  });
+  const syncRealPricesBtn = document.getElementById('syncRealPricesBtn');
+  if(syncRealPricesBtn) syncRealPricesBtn.addEventListener('click', async ()=>{
+    const n = await syncRealPrices();
+    showToast(n ? `Updated ${n} fund${n===1?'':'s'}.` : 'Already up to date.'); render();
+  });
   const addAssetBtn = document.getElementById('addAssetBtn');
   if(addAssetBtn) addAssetBtn.addEventListener('click', async ()=>{
     const name = document.getElementById('newAssetName').value.trim();
