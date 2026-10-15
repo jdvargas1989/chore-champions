@@ -1190,6 +1190,117 @@ function assetCardWrap(asset, frontHTML, holding){
   `;
 }
 
+// ---------- Real-company "Business Explorer" (data comes from SEC filings via the weekly GitHub job) ----------
+const marketData = { fin: null, weekly: null, diamonds: null, loaded: false };
+const FAIR_MULTIPLE = 15;      // a common rule of thumb: a fair price is about 15 years of profit
+const BIZ_BUCKETS = [
+  { key: 'kid', title: '🧒 Brands you know' },
+  { key: 'biggest', title: '🏔️ The biggest companies' }
+];
+async function loadMarketData(){
+  const get = async (f)=>{ try{ const r = await fetch(f + '?v=' + Math.floor(Date.now()/3600000)); return r.ok ? await r.json() : null; }catch(e){ return null; } };
+  const [fin, weekly, diamonds] = await Promise.all([get('data/financials.json'), get('data/market_weekly.json'), get('data/diamonds.json')]);
+  marketData.fin = fin; marketData.weekly = weekly; marketData.diamonds = diamonds; marketData.loaded = true;
+}
+function fmtBig(n){
+  if(n===null || n===undefined || isNaN(n)) return '—';
+  const a = Math.abs(n), sign = n<0 ? '-' : '';
+  if(a>=1e12) return sign+'$'+(a/1e12).toFixed(2).replace(/\.?0+$/,'')+' trillion';
+  if(a>=1e9) return sign+'$'+(a/1e9).toFixed(1).replace(/\.0$/,'')+' billion';
+  if(a>=1e6) return sign+'$'+(a/1e6).toFixed(0)+' million';
+  return sign+'$'+Math.round(a).toLocaleString();
+}
+function bizValue(rec, price){
+  if(!rec || !rec.ttm || !rec.shares || !price) return null;
+  const t = rec.ttm, prior = rec.ttmPrior;
+  const profit = (t.netIncome>0) ? t.netIncome : (t.opIncome>0 ? t.opIncome : null);
+  if(!profit || !(t.revenue>0)) return null;
+  const cap = price * rec.shares;
+  const rawGrowth = prior && prior.revenue>0 ? (t.revenue/prior.revenue - 1) : null;
+  const g = Math.max(-0.05, Math.min(0.20, rawGrowth===null ? 0.05 : rawGrowth));
+  const fairNow = profit * FAIR_MULTIPLE;
+  const profit5 = profit * Math.pow(1+g, 5);
+  const potential5 = profit5 * FAIR_MULTIPLE;
+  const ratio = cap / fairNow;
+  const verdict = ratio < 0.8 ? { icon:'🏷️', text:'Looks like it\'s on sale' }
+                : ratio <= 1.25 ? { icon:'⚖️', text:'Priced about right' }
+                : { icon:'🎈', text:'Priced for big dreams' };
+  return { profit, margin: profit/t.revenue, revenue: t.revenue, cap, g, rawGrowth, fairNow, profit5, potential5, ratio, verdict,
+           earnYears: cap/profit, asOf: t.asOf };
+}
+function renderBizCard(rec, wk){
+  const px = wk && wk.prices && wk.prices[rec.ticker];
+  const price = px && px.close;
+  const v = bizValue(rec, price);
+  const open = view.bizOpen === rec.ticker;
+  const wkChange = px && px.weekChangePct!==null && px.weekChangePct!==undefined ? px.weekChangePct : null;
+  const head = `
+    <div class="item-card" data-bizopen="${esc(rec.ticker)}" style="cursor:pointer;">
+      <div class="item-body">
+        <div class="item-name">${esc(rec.name)} <span class="hint">${esc(rec.ticker)}</span></div>
+        <div class="item-sub">${esc(rec.kidNote||'')}${wkChange!==null ? ' · '+(wkChange>=0?'▲ ':'▼ ')+Math.abs(wkChange).toFixed(1)+'% this week' : ''}</div>
+      </div>
+      <div class="hint">${open?'▲':'▼'}</div>
+    </div>`;
+  if(!open) return head;
+  if(!v) return head + `<div class="form-box"><p class="hint">The numbers for this company are still loading from its latest report. Check back after the next Friday update.</p></div>`;
+  const meterPos = Math.max(2, Math.min(98, ((Math.log2(Math.max(0.25, Math.min(4, v.ratio))) + 2) / 4) * 100));
+  return head + `
+    <div class="form-box">
+      <div class="section-label" style="margin-top:0">💰 What the business earns (past 12 months)</div>
+      <div class="money-row"><div class="money-row-label"><span>Money coming in</span><span>${fmtBig(v.revenue)}</span></div>
+        <div class="money-row-track"><div class="money-row-fill" style="width:100%;background:var(--green);"></div></div></div>
+      <div class="money-row"><div class="money-row-label" style="font-weight:800;"><span>Real profit it kept</span><span>${fmtBig(v.profit)} (${Math.round(v.margin*100)}%)</span></div>
+        <div class="money-row-track"><div class="money-row-fill" style="width:${Math.max(2,Math.min(100,Math.round(v.margin*100)))}%;background:var(--green-deep);"></div></div></div>
+      <p class="hint">For every $1 it sells, it keeps about ${Math.round(v.margin*100)}¢.</p>
+
+      <div class="section-label">🏷️ What people pay for the whole company today</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:24px;color:var(--green-deep);">${fmtBig(v.cap)}</div>
+      <p class="hint">That's about ${v.earnYears.toFixed(0)} years of its current profit.</p>
+
+      <div class="section-label">⚖️ Price vs. value ${v.verdict.icon} ${v.verdict.text}</div>
+      <div style="position:relative;height:16px;border-radius:999px;background:linear-gradient(90deg,var(--green),var(--gold),var(--red));margin:8px 0 4px;">
+        <div style="position:absolute;left:${meterPos}%;top:-4px;width:6px;height:24px;border-radius:3px;background:var(--ink);transform:translateX(-50%);"></div>
+      </div>
+      <div class="hint" style="display:flex;justify-content:space-between;"><span>On sale</span><span>Fair</span><span>Pricey</span></div>
+      <p class="hint">A common rule of thumb says a fair price is about ${FAIR_MULTIPLE} years of profit, or ${fmtBig(v.fairNow)} here.</p>
+
+      <div class="section-label">🔭 What could it be worth in 5 years?</div>
+      <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:22px;color:var(--ink);">${fmtBig(v.potential5)}</div>
+      <p class="hint">If its sales keep ${v.g>=0?'growing':'shrinking'} about ${Math.abs(v.g*100).toFixed(0)}% a year and people keep paying ${FAIR_MULTIPLE} years of profit, that's ${(v.potential5/v.cap).toFixed(1)}× today's price. Growth can speed up, slow down, or stop, so this is a guess, not a promise.</p>
+      <p class="hint">Real numbers from the company's own SEC reports, through ${esc(v.asOf||'')}. For learning, not investing advice.</p>
+    </div>`;
+}
+function renderBusinessExplorer(){
+  if(!marketData.loaded) return '';
+  const fin = marketData.fin, wk = marketData.weekly, dm = marketData.diamonds;
+  if(!fin || !fin.companies) return `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-label" style="margin-top:0">🔍 Real Business Explorer</div>
+      <p class="hint">Coming soon: real companies, real profits, and whether the price looks cheap or pricey. Mom or Dad is setting up the weekly update.</p>
+    </div>`;
+  const recs = Object.values(fin.companies);
+  const sections = BIZ_BUCKETS.map(b=>{
+    const list = recs.filter(r=>r.bucket===b.key);
+    return list.length ? `<div class="section-label">${b.title}</div><div class="item-list">${list.map(r=>renderBizCard(r, wk)).join('')}</div>` : '';
+  }).join('');
+  const picks = dm && dm.picks && dm.picks.length ? `
+    <div class="section-label">💎 Hidden gems? (cheap-looking companies)</div>
+    <p class="hint">A computer screen found these S&amp;P 500 companies that earn a lot compared to their price. Cheap can be a trap, so read why.</p>
+    <div class="item-list">${dm.picks.map(p=>{
+      const open = view.bizOpen === 'D:'+p.ticker;
+      return `<div class="item-card" data-bizopen="D:${esc(p.ticker)}" style="cursor:pointer;"><div class="item-body"><div class="item-name">${esc(p.name)} <span class="hint">${esc(p.ticker)}</span></div><div class="item-sub">${esc(p.sector)} · worth ${fmtBig(p.marketCap)}</div></div><div class="hint">${open?'▲':'▼'}</div></div>` +
+        (open ? `<div class="form-box"><p class="hint">Pays about ${p.evEbit}× its yearly operating profit, and turns ${p.fcfYieldPct}% of its price into spare cash each year.</p><div class="section-label" style="margin-top:6px">🤔 Why might it be cheap?</div>${p.whyMightBeCheap.map(w=>`<p class="hint" style="margin:3px 0;">• ${esc(w)}</p>`).join('')}</div>` : '');
+    }).join('')}</div>` : '';
+  const asOf = wk && wk.asOf ? ` Prices as of ${esc(wk.asOf)}.` : '';
+  return `
+    <div class="card" style="margin-bottom:14px;">
+      <div class="section-label" style="margin-top:0">🔍 Real Business Explorer</div>
+      <p class="hint">Look inside real companies: what they earn, what they're worth, and whether the price makes sense.${asOf}</p>
+      ${sections}${picks}
+    </div>`;
+}
+
 function renderInvestSection(kid){
   const holdings = data.holdings.filter(h=>h.kidId===kid.id);
   const totalValue = holdings.reduce((s,h)=>{ const a=findAsset(h.assetId); return s + (a ? h.units*a.price : 0); }, 0);
@@ -1256,7 +1367,7 @@ function renderInvestSection(kid){
   }).join('');
 
   return `
-    <p class="hint" style="margin-bottom:14px;">This is a pretend practice portfolio for learning — Mom and Dad set these prices by hand, it isn't the real stock market.</p>
+    <p class="hint" style="margin-bottom:14px;">The practice portfolio below is pretend: Mom and Dad set those prices by hand. The Real Business Explorer uses real company reports, but you can't buy those with your money.</p>
     ${recap.length ? `
       <div class="card" style="margin-bottom:14px;">
         <div class="section-label" style="margin-top:0">📅 This week in the market</div>
@@ -1278,6 +1389,7 @@ function renderInvestSection(kid){
       </div>
       <div class="item-list" style="margin-bottom:20px;">${holdingsHtml}</div>
     ` : ''}
+    ${renderBusinessExplorer()}
     <div class="section-label">Available to invest in</div>
     <div class="item-list">${assetsHtml}</div>
   `;
@@ -1894,6 +2006,12 @@ function renderKid(app){
     showToast(`"${name}" goal started!`);
     render();
   });
+
+  app.querySelectorAll('[data-bizopen]').forEach(el=>el.addEventListener('click', ()=>{
+    const k = el.dataset.bizopen;
+    view.bizOpen = (view.bizOpen === k) ? null : k;
+    render();
+  }));
 
   app.querySelectorAll('.poke-front').forEach(el=>el.addEventListener('click', (e)=>{
     if(e.target.closest('button')) return;
@@ -3195,6 +3313,7 @@ async function recoverOrphanedLocalData(){
 (async function init(){
   await recoverOrphanedLocalData();
   await loadData();
+  loadMarketData().then(()=>{ const a=document.activeElement; if(view.screen!=='home' && !(a && /INPUT|TEXTAREA/.test(a.tagName))) render(); });
   await accrueInterest();
   if(ensureTreasureBox()){ await saveData(); }
   view = { screen: 'home' };
