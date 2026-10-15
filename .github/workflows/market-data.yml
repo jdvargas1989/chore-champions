@@ -1,0 +1,61 @@
+name: Market data
+
+on:
+  schedule:
+    - cron: "17 23 * * 5"   # Fridays after the U.S. market close (UTC)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "weekly = prices + SEC for tracked companies; screen = quarter-end S&P 500 screen (resumable)"
+        type: choice
+        options: [weekly, screen]
+        default: weekly
+      asof:
+        description: "Screen date YYYY-MM-DD, or 'auto' for the last quarter end"
+        default: auto
+
+permissions:
+  contents: write
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install requests pandas lxml
+
+      - name: Weekly snapshot and tracked-company filings
+        if: github.event_name == 'schedule' || inputs.mode == 'weekly'
+        run: |
+          python scripts/prices.py snapshot
+          python scripts/build_financials.py --universe data/universe.json --out data/financials.json
+
+      - name: Quarter-end screen (S&P 500)
+        if: inputs.mode == 'screen'
+        run: |
+          python scripts/sp500_list.py
+          python scripts/build_financials.py --sp500 data/sp500.json --out data/sp500_financials.json --slim
+          python scripts/prices.py asof "${{ inputs.asof }}" --tickers-file data/sp500.json --max-calls 700
+          ASOF="${{ inputs.asof }}"
+          if [ "$ASOF" = "auto" ]; then ASOF=$(python -c "import sys;sys.path.insert(0,'scripts');import prices;print(prices.last_quarter_end())"); fi
+          python scripts/screen.py --financials data/sp500_financials.json --asof "$ASOF" --out data/diamonds.json
+
+      - name: Commit data
+        run: |
+          git config user.name "market-data-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          git diff --cached --quiet || git commit -m "Update market data"
+          git pull --rebase origin main
+          git push

@@ -1,0 +1,26 @@
+{
+  "note": "Practice-stock companies tracked every week. 'bucket' groups them in the app. Diamonds are chosen each quarter by scripts/screen.py and live in data/diamonds.json.",
+  "companies": [
+    {"ticker": "DIS",  "name": "Disney",           "bucket": "kid",     "kidNote": "Movies, theme parks, Disney+"},
+    {"ticker": "MAT",  "name": "Mattel",           "bucket": "kid",     "kidNote": "Barbie and Hot Wheels"},
+    {"ticker": "HAS",  "name": "Hasbro",           "bucket": "kid",     "kidNote": "Monopoly, Transformers, Magic: The Gathering"},
+    {"ticker": "NKE",  "name": "Nike",             "bucket": "kid",     "kidNote": "Shoes and sports gear"},
+    {"ticker": "MCD",  "name": "McDonald's",       "bucket": "kid",     "kidNote": "Happy Meals"},
+    {"ticker": "NFLX", "name": "Netflix",          "bucket": "kid",     "kidNote": "Streaming shows and movies"},
+    {"ticker": "RBLX", "name": "Roblox",           "bucket": "kid",     "kidNote": "Online games kids build and play"},
+    {"ticker": "KO",   "name": "Coca-Cola",        "bucket": "kid",     "kidNote": "Sodas, juices, and water"},
+    {"ticker": "MDLZ", "name": "Mondelez",         "bucket": "kid",     "kidNote": "Oreo and other snacks"},
+    {"ticker": "WMT",  "name": "Walmart",          "bucket": "kid",     "kidNote": "Where lots of families shop"},
+
+    {"ticker": "NVDA", "name": "Nvidia",           "bucket": "biggest", "kidNote": "Chips that power games and AI"},
+    {"ticker": "AAPL", "name": "Apple",            "bucket": "biggest", "kidNote": "iPhone and iPad"},
+    {"ticker": "GOOGL","name": "Alphabet",         "bucket": "biggest", "kidNote": "Google and YouTube"},
+    {"ticker": "MSFT", "name": "Microsoft",        "bucket": "biggest", "kidNote": "Windows, Xbox, and Minecraft"},
+    {"ticker": "AMZN", "name": "Amazon",           "bucket": "biggest", "kidNote": "Online shopping and delivery"},
+    {"ticker": "META", "name": "Meta",             "bucket": "biggest", "kidNote": "Instagram and Facebook"},
+    {"ticker": "AVGO", "name": "Broadcom",         "bucket": "biggest", "kidNote": "Chips inside phones and networks"},
+    {"ticker": "TSLA", "name": "Tesla",            "bucket": "biggest", "kidNote": "Electric cars"},
+    {"ticker": "BRK-B","name": "Berkshire Hathaway","bucket": "biggest","kidNote": "Owns insurance, railroads, and many companies"},
+    {"ticker": "LLY",  "name": "Eli Lilly",        "bucket": "biggest", "kidNote": "Medicines", "needsConfirm": "Placeholder for rank 10. TSMC (rank 9 at end of 2025) files with the SEC differently, so confirm the next U.S. company on the year-end list."}
+  ]
+}
