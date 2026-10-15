@@ -462,6 +462,7 @@ async function loadData(){
   if(typeof data.interestRate !== 'number') data.interestRate = 5;
   if(!Array.isArray(data.interestLog)) data.interestLog = [];
   if(!Array.isArray(data.changeLog)) data.changeLog = [];
+  if(!data.familyBank || typeof data.familyBank !== 'object') data.familyBank = { accountName: '', realBalance: null, realApy: null };
   data.kids.forEach(k => { if(typeof k.cashBalance !== 'number') k.cashBalance = 0; });
   data.kids.forEach(k => { if(!k.lastInterestTs) k.lastInterestTs = Date.now(); });
   data.kids.forEach(k => { if(typeof k.pin !== 'string') k.pin = null; });
@@ -2149,6 +2150,35 @@ function buildWeeklyRecap(){
   return { range, headline, lines, kidLines, heads, changes, text };
 }
 
+/* ===== FAMILY BANK ===== */
+function buildFamilyBank(){
+  const rows = data.kids.map(k => {
+    const goals = data.savingsGoals.filter(g => g.kidId === k.id).reduce((a,g) => a + g.saved, 0);
+    const stocks = data.holdings.filter(h => h.kidId === k.id).reduce((a,h) => {
+      const asset = findAsset(h.assetId); return a + (asset ? h.units * asset.price : 0);
+    }, 0);
+    const cash = k.cashBalance || 0;
+    const interestBase = cash + goals;
+    const eligible = interestBase >= MIN_INTEREST_BALANCE;
+    const weeklyInterest = eligible ? interestBase * (data.interestRate/100) / 52 : 0;
+    return { kid: k, cash, goals, stocks, total: cash + goals + stocks, eligible, weeklyInterest };
+  });
+  const sum = key => rows.reduce((a,r) => a + r[key], 0);
+  const fb = data.familyBank || {};
+  const realBalance = typeof fb.realBalance === 'number' ? fb.realBalance : null;
+  const realApy = typeof fb.realApy === 'number' ? fb.realApy : null;
+  const owed = sum('total');
+  const weeklyCost = sum('weeklyInterest');
+  const annualCost = weeklyCost * 52;
+  const realEarnAnnual = (realBalance !== null && realApy !== null) ? realBalance * realApy / 100 : null;
+  return {
+    rows, owed, cash: sum('cash'), goals: sum('goals'), stocks: sum('stocks'),
+    weeklyCost, annualCost, realBalance, realApy, realEarnAnnual,
+    gap: realBalance !== null ? realBalance - owed : null,
+    net: realEarnAnnual !== null ? realEarnAnnual - annualCost : null
+  };
+}
+
 function renderParent(app){
   if(view.tab === 'pin' && !parentSession){
     return renderPin(app);
@@ -2354,7 +2384,35 @@ function renderParent(app){
       </div>`;
   } else if(tab === 'bank'){
     const pendTx = data.bankTx.filter(t=>t.status==='pending').sort((a,b)=>a.ts-b.ts);
-    body = `
+    const fbk = buildFamilyBank();
+    const fbSigned = n => (n < 0 ? '-' : '+') + fmtMoney(Math.abs(n));
+    const familyBankCard = `
+      <div class="section-label">Family bank overview</div>
+      <div class="card" style="margin-bottom:16px;">
+        <div style="text-align:center;margin-bottom:10px;">
+          <div class="hint" style="margin:0;">You owe the kids</div>
+          <div style="font-family:'Baloo 2',sans-serif;font-weight:800;font-size:34px;color:var(--green-deep);">${fmtMoney(fbk.owed)}</div>
+          <div class="hint" style="margin:0;">${fmtMoney(fbk.cash)} cash · ${fmtMoney(fbk.goals)} in goals · ${fmtMoney(fbk.stocks)} in practice stocks</div>
+        </div>
+        <div class="item-list" style="margin-bottom:10px;">${fbk.rows.map(r => `
+          <div class="manage-row">
+            <span style="font-size:20px;">${r.kid.emoji}</span>
+            <span class="name-field" style="font-weight:800;">${esc(r.kid.name)}</span>
+            <span class="hint" style="margin:0;text-align:right;">${fmtMoney(r.total)}${r.eligible ? ` · earns ~${fmtMoney(r.weeklyInterest)}/wk` : ''}</span>
+          </div>`).join('') || '<div class="empty">No kids yet.</div>'}</div>
+        <p class="hint">Interest you're paying at ${data.interestRate}%/yr: about <b>${fmtMoney(fbk.weeklyCost)}</b> a week (<b>${fmtMoney(fbk.annualCost)}</b> a year) on cash plus goal savings. Practice stocks don't earn interest.</p>
+        <div class="section-label" style="margin:12px 0 6px;">Real account (where you actually keep it)</div>
+        <div class="form-row"><input type="text" id="fbAccountName" value="${esc((data.familyBank && data.familyBank.accountName) || '')}" placeholder="Account name, e.g. Ally savings"></div>
+        <div class="form-row">
+          <input type="number" step="0.01" min="0" id="fbRealBalance" value="${fbk.realBalance === null ? '' : fbk.realBalance}" placeholder="Balance set aside $">
+          <input type="number" step="0.01" min="0" id="fbRealApy" value="${fbk.realApy === null ? '' : fbk.realApy}" placeholder="APY %" style="max-width:90px;">
+        </div>
+        ${fbk.gap === null ? `<p class="hint">Enter the balance you've set aside for the kids to see whether it covers what you owe.</p>` : `
+          <p class="hint">${fbk.gap >= 0 ? `✅ Covered with <b>${fmtMoney(fbk.gap)}</b> to spare.` : `⚠️ Short by <b>${fmtMoney(-fbk.gap)}</b>. Move that much into the account to fully cover what the kids have.`}</p>`}
+        ${fbk.net === null ? '' : `<p class="hint">Your account earns about <b>${fmtMoney(fbk.realEarnAnnual)}</b> a year; paying the kids costs <b>${fmtMoney(fbk.annualCost)}</b>. Net <b>${fbSigned(fbk.net)}</b> a year${fbk.net < 0 ? ', which is your teaching subsidy for showing kids what saving earns' : ''}.</p>`}
+        <p class="hint">Track-only. Chore Champions never moves or holds real money, and this isn't financial advice.</p>
+      </div>`;
+    body = familyBankCard + `
       <div class="section-label">Requests</div>
       ${pendTx.length ? `<div class="item-list">${pendTx.map(t=>{
         const kid = findKid(t.kidId);
@@ -2928,6 +2986,25 @@ function renderParent(app){
     await saveData();
     showToast('New treasure box puzzle started!');
     render();
+  });
+
+  ['fbAccountName','fbRealBalance','fbRealApy'].forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', async ()=>{
+      if(!data.familyBank) data.familyBank = { accountName: '', realBalance: null, realApy: null };
+      if(id === 'fbAccountName') data.familyBank.accountName = el.value.trim();
+      else {
+        const v = el.value === '' ? null : Math.max(0, parseFloat(el.value));
+        data.familyBank[id === 'fbRealBalance' ? 'realBalance' : 'realApy'] = (v === null || isNaN(v)) ? null : v;
+      }
+      await saveData();
+      // Only redraw once focus has left all three fields, so tabbing between them doesn't wipe typing.
+      setTimeout(()=>{
+        const ae = document.activeElement;
+        if(!ae || !['fbAccountName','fbRealBalance','fbRealApy'].includes(ae.id)) render();
+      }, 150);
+    });
   });
 
   const copyRecapBtn = document.getElementById('copyRecapBtn');
